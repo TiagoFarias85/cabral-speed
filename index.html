@@ -149,6 +149,11 @@
   .btn-admin:disabled { opacity: 0.5; cursor: not-allowed; }
   .btn-delete { background: transparent; color: var(--red); border: 1px solid rgba(192,57,43,0.4); border-radius: 4px; padding: 6px 12px; font-size: 12px; cursor: pointer; transition: background 0.2s; }
   .btn-delete:hover { background: rgba(192,57,43,0.1); }
+  .btn-edit { background: transparent; color: var(--gold); border: 1px solid rgba(201,168,76,0.4); border-radius: 4px; padding: 6px 12px; font-size: 12px; cursor: pointer; transition: background 0.2s; margin-right: 6px; }
+  .btn-edit:hover { background: rgba(201,168,76,0.1); }
+  .item-actions { display: flex; align-items: center; flex-shrink: 0; }
+  .edit-mode-banner { background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.3); border-radius: 4px; padding: 10px 14px; font-size: 13px; color: var(--gold); margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between; }
+  .btn-cancel { background: transparent; border: none; color: var(--gray); font-size: 13px; cursor: pointer; text-decoration: underline; }
   .admin-list { list-style: none; }
   .admin-list-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.06); gap: 12px; }
   .admin-list-item:last-child { border-bottom: none; }
@@ -330,6 +335,10 @@
         </div>
         <div id="tab-add" class="tab-content active">
           <div class="admin-form">
+            <div id="edit-banner" style="display:none;" class="edit-mode-banner">
+              ✏️ Modo edição — alterando item existente
+              <button class="btn-cancel" onclick="cancelEdit()">Cancelar edição</button>
+            </div>
             <div class="admin-form-row">
               <div>
                 <label>Tipo</label>
@@ -607,6 +616,51 @@
     }
   }
 
+  // ─── EDIT ───
+  let editingId = null;
+  let editingOldImageUrl = null;
+
+  function editItem(id) {
+    const item = allItems.find(i => i.id === id);
+    if (!item) return;
+
+    editingId = id;
+    editingOldImageUrl = item.image_url;
+
+    document.getElementById('item-type').value = item.type;
+    document.getElementById('item-price').value = item.price || '';
+    document.getElementById('item-name').value = item.name;
+    document.getElementById('item-desc').value = item.description || '';
+    document.getElementById('item-featured').checked = item.featured || false;
+
+    const preview = document.getElementById('img-preview');
+    if (item.image_url) { preview.src = item.image_url; preview.style.display = 'block'; }
+    else { preview.style.display = 'none'; }
+
+    document.getElementById('item-image').value = '';
+    document.getElementById('edit-banner').style.display = 'flex';
+    document.getElementById('btn-add').textContent = '💾 Salvar Alterações';
+    document.getElementById('add-msg').innerHTML = '';
+
+    // Switch to add tab
+    switchTab('add', document.querySelector('.admin-tab'));
+    window.scrollTo(0, 0);
+  }
+
+  function cancelEdit() {
+    editingId = null;
+    editingOldImageUrl = null;
+    document.getElementById('item-name').value = '';
+    document.getElementById('item-desc').value = '';
+    document.getElementById('item-price').value = '';
+    document.getElementById('item-image').value = '';
+    document.getElementById('item-featured').checked = false;
+    document.getElementById('img-preview').style.display = 'none';
+    document.getElementById('edit-banner').style.display = 'none';
+    document.getElementById('btn-add').textContent = '+ Adicionar ao Catálogo';
+    document.getElementById('add-msg').innerHTML = '';
+  }
+
   async function addItem() {
     const name = document.getElementById('item-name').value.trim();
     const desc = document.getElementById('item-desc').value.trim();
@@ -622,32 +676,44 @@
     btn.disabled = true; btn.textContent = 'Salvando...'; msg.innerHTML = '';
 
     try {
-      let image_url = null;
+      let image_url = editingId ? editingOldImageUrl : null;
+
       if (imageFile) {
         document.getElementById('upload-progress').style.display = 'block';
         document.getElementById('upload-progress-bar').style.width = '40%';
+        // If editing and had old image, delete it first
+        if (editingId && editingOldImageUrl) await deleteImage(editingOldImageUrl);
         image_url = await uploadImage(imageFile);
         document.getElementById('upload-progress-bar').style.width = '100%';
         setTimeout(() => { document.getElementById('upload-progress').style.display = 'none'; document.getElementById('upload-progress-bar').style.width = '0%'; }, 600);
       }
 
-      await insertItem({ type, name, description: desc || null, price, image_url, featured });
+      if (editingId) {
+        // UPDATE
+        const res = await sbFetch(`/rest/v1/catalog?id=eq.${editingId}`, {
+          method: 'PATCH',
+          headers: { 'Prefer': 'return=representation' },
+          body: JSON.stringify({ type, name, description: desc || null, price, image_url, featured })
+        });
+        if (!res.ok) { const e = await res.json(); throw new Error(e.message || 'Erro ao atualizar'); }
+      } else {
+        // INSERT
+        await insertItem({ type, name, description: desc || null, price, image_url, featured });
+      }
+
       allItems = await getItems();
       renderCatalog(currentFilter);
       renderCarousel();
-
-      document.getElementById('item-name').value = '';
-      document.getElementById('item-desc').value = '';
-      document.getElementById('item-price').value = '';
-      document.getElementById('item-image').value = '';
-      document.getElementById('item-featured').checked = false;
-      document.getElementById('img-preview').style.display = 'none';
-      msg.innerHTML = '<div class="admin-msg success">✓ Item adicionado com sucesso!</div>';
+      cancelEdit();
+      msg.innerHTML = `<div class="admin-msg success">✓ Item ${editingId ? 'atualizado' : 'adicionado'} com sucesso!</div>`;
+      editingId = null;
+      editingOldImageUrl = null;
       setTimeout(() => msg.innerHTML = '', 3000);
     } catch(e) {
       msg.innerHTML = `<div class="admin-msg error">Erro: ${e.message}</div>`;
     } finally {
-      btn.disabled = false; btn.textContent = '+ Adicionar ao Catálogo';
+      btn.disabled = false;
+      btn.textContent = editingId ? '💾 Salvar Alterações' : '+ Adicionar ao Catálogo';
     }
   }
 
@@ -675,7 +741,10 @@
           <strong>${item.name}${item.featured ? '<span class="star-badge">⭐ Destaque</span>' : ''}</strong>
           <span>${item.type === 'peca' ? 'Peça' : 'Serviço'} · ${item.price}</span>
         </div>
-        <button class="btn-delete" onclick="deleteItem('${item.id}', ${item.image_url ? `'${item.image_url}'` : 'null'})">Remover</button>
+        <div class="item-actions">
+          <button class="btn-edit" onclick="editItem('${item.id}')">Editar</button>
+          <button class="btn-delete" onclick="deleteItem('${item.id}', ${item.image_url ? `'${item.image_url}'` : 'null'})">Remover</button>
+        </div>
       </li>
     `).join('');
   }
