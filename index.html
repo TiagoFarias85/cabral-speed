@@ -9,7 +9,6 @@
   :root {
     --gold: #C9A84C;
     --gold-light: #E8C97A;
-    --gold-dark: #8A6820;
     --black: #0A0A0A;
     --dark: #111111;
     --dark2: #1A1A1A;
@@ -23,37 +22,29 @@
   body { font-family: 'Inter', sans-serif; background: var(--black); color: var(--white); min-height: 100vh; }
 
   /* NAV */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    background: rgba(10,10,10,0.95);
-    border-bottom: 1px solid rgba(201,168,76,0.2);
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 5%; height: 64px;
-    backdrop-filter: blur(8px);
-  }
-  .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10,10,10,0.95); border-bottom: 1px solid rgba(201,168,76,0.2); display: flex; align-items: center; justify-content: space-between; padding: 0 5%; height: 64px; backdrop-filter: blur(8px); }
+  .nav-logo img { height: 48px; width: auto; }
   .nav-links { display: flex; gap: 32px; list-style: none; }
   .nav-links a { color: var(--gray-light); text-decoration: none; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; }
   .nav-links a:hover { color: var(--gold); }
   .nav-cta { background: var(--gold); color: var(--black) !important; padding: 8px 18px; border-radius: 4px; font-weight: 600 !important; }
-  .nav-cta:hover { background: var(--gold-light) !important; color: var(--black) !important; }
+  .nav-cta:hover { background: var(--gold-light) !important; }
 
   /* HERO */
   #hero { min-height: 100vh; display: flex; align-items: center; padding: 64px 5% 0; position: relative; overflow: hidden; }
   .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 80% at 80% 50%, rgba(201,168,76,0.07) 0%, transparent 70%), linear-gradient(135deg, #0A0A0A 0%, #141414 100%); }
   .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px); background-size: 60px 60px; }
-  .hero-content { position: relative; z-index: 1; max-width: 680px; }
+  .hero-content { position: relative; z-index: 1; max-width: 580px; }
   .hero-tag { display: inline-block; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); border: 1px solid rgba(201,168,76,0.4); padding: 4px 14px; border-radius: 2px; margin-bottom: 24px; }
-  .hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(56px, 8vw, 96px); line-height: 0.95; letter-spacing: 0.02em; color: var(--white); margin-bottom: 8px; }
-  .hero-title span { color: var(--gold); }
-  .hero-subtitle { font-family: 'Bebas Neue', sans-serif; font-size: clamp(28px, 4vw, 48px); color: var(--gray); letter-spacing: 0.05em; margin-bottom: 28px; }
+  .hero-slogan { font-family: 'Bebas Neue', sans-serif; font-size: clamp(32px, 4.5vw, 52px); color: var(--white); letter-spacing: 0.03em; line-height: 1.1; margin-bottom: 10px; }
+  .hero-slogan span { color: var(--gold); }
   .hero-desc { font-size: 16px; color: var(--gray-light); line-height: 1.7; max-width: 480px; margin-bottom: 40px; }
   .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+  .hero-img { position: absolute; right: 3%; top: 50%; transform: translateY(-50%); width: clamp(280px, 38vw, 520px); border-radius: 12px; opacity: 0.9; z-index: 1; box-shadow: 0 0 80px rgba(201,168,76,0.15); }
   .btn-primary { background: var(--gold); color: var(--black); padding: 14px 28px; border-radius: 4px; font-weight: 600; font-size: 14px; text-decoration: none; letter-spacing: 0.05em; text-transform: uppercase; transition: background 0.2s, transform 0.15s; display: inline-flex; align-items: center; gap: 8px; }
   .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
   .btn-secondary { border: 1px solid rgba(201,168,76,0.4); color: var(--gold); padding: 14px 28px; border-radius: 4px; font-size: 14px; text-decoration: none; letter-spacing: 0.05em; text-transform: uppercase; transition: border-color 0.2s, background 0.2s; display: inline-flex; align-items: center; gap: 8px; }
   .btn-secondary:hover { border-color: var(--gold); background: rgba(201,168,76,0.08); }
-  .hero-decor { position: absolute; right: 5%; top: 50%; transform: translateY(-50%); width: clamp(200px, 35vw, 420px); opacity: 0.12; z-index: 0; }
 
   /* STATS */
   .stats-bar { background: var(--dark2); border-top: 1px solid rgba(201,168,76,0.15); border-bottom: 1px solid rgba(201,168,76,0.15); padding: 28px 5%; display: flex; justify-content: center; gap: 60px; flex-wrap: wrap; }
@@ -61,14 +52,32 @@
   .stat-number { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--gold); letter-spacing: 0.05em; }
   .stat-label { font-size: 11px; color: var(--gray); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 2px; }
 
-  /* SECTION */
-  section { padding: 80px 5%; }
+  /* CAROUSEL */
+  #destaques { background: var(--black); padding: 60px 5%; }
   .section-eyebrow { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
-  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 5vw, 56px); color: var(--white); letter-spacing: 0.03em; margin-bottom: 12px; }
-  .section-desc { font-size: 15px; color: var(--gray); max-width: 500px; line-height: 1.7; margin-bottom: 48px; }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(32px, 5vw, 52px); color: var(--white); letter-spacing: 0.03em; margin-bottom: 32px; }
+  .carousel-wrapper { position: relative; overflow: hidden; }
+  .carousel-track { display: flex; gap: 20px; transition: transform 0.4s ease; }
+  .carousel-item { flex: 0 0 calc(33.33% - 14px); background: var(--dark2); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; overflow: hidden; transition: border-color 0.2s; }
+  .carousel-item:hover { border-color: rgba(201,168,76,0.4); }
+  .carousel-img { width: 100%; height: 200px; object-fit: cover; }
+  .carousel-img-placeholder { width: 100%; height: 200px; background: var(--dark3); display: flex; align-items: center; justify-content: center; color: rgba(201,168,76,0.25); font-size: 48px; }
+  .carousel-body { padding: 16px 18px 20px; }
+  .carousel-badge { display: inline-block; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px; margin-bottom: 8px; }
+  .carousel-name { font-size: 15px; font-weight: 600; color: var(--white); margin-bottom: 4px; }
+  .carousel-price { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--gold); margin-bottom: 12px; }
+  .carousel-btn { display: block; background: #1a472a; color: #4ade80; border: 1px solid rgba(74,222,128,0.2); border-radius: 4px; padding: 8px 0; text-align: center; font-size: 13px; font-weight: 500; text-decoration: none; transition: background 0.2s; }
+  .carousel-btn:hover { background: #1e5c34; }
+  .carousel-controls { display: flex; justify-content: center; gap: 12px; margin-top: 24px; align-items: center; }
+  .carousel-btn-nav { background: var(--dark2); border: 1px solid rgba(201,168,76,0.3); color: var(--gold); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+  .carousel-btn-nav:hover { background: rgba(201,168,76,0.15); }
+  .carousel-dots { display: flex; gap: 6px; }
+  .carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.2); cursor: pointer; transition: background 0.2s; }
+  .carousel-dot.active { background: var(--gold); }
+  #destaques-empty { color: var(--gray); font-size: 14px; padding: 20px 0; display: none; }
 
   /* CATALOG */
-  #catalogo { background: var(--dark); }
+  #catalogo { background: var(--dark); padding: 80px 5%; }
   .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; }
   .filter-btn { padding: 7px 18px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.12); background: transparent; color: var(--gray-light); font-size: 13px; cursor: pointer; letter-spacing: 0.05em; transition: all 0.2s; }
   .filter-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.08); }
@@ -84,13 +93,13 @@
   .badge-servico { background: rgba(59,130,246,0.15); color: #60A5FA; }
   .product-name { font-size: 15px; font-weight: 600; color: var(--white); margin-bottom: 6px; }
   .product-desc { font-size: 13px; color: var(--gray); line-height: 1.5; margin-bottom: 14px; }
-  .product-price { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--gold); letter-spacing: 0.05em; }
+  .product-price { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--gold); }
   .product-whatsapp { display: block; margin-top: 12px; background: #1a472a; color: #4ade80; border: 1px solid rgba(74,222,128,0.2); border-radius: 4px; padding: 8px 0; text-align: center; font-size: 13px; font-weight: 500; text-decoration: none; transition: background 0.2s; }
   .product-whatsapp:hover { background: #1e5c34; }
   .catalog-loading { color: var(--gray); font-size: 15px; padding: 40px 0; text-align: center; }
 
   /* CONTACT */
-  #contato { background: var(--black); }
+  #contato { background: var(--black); padding: 80px 5%; }
   .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
   .contact-method { display: flex; gap: 16px; align-items: flex-start; padding: 24px; background: var(--dark2); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; margin-bottom: 16px; text-decoration: none; transition: border-color 0.2s; }
   .contact-method:hover { border-color: rgba(201,168,76,0.35); }
@@ -100,11 +109,11 @@
   .contact-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray); margin-bottom: 4px; }
   .contact-value { font-size: 15px; font-weight: 500; color: var(--white); }
   .contact-note { font-size: 13px; color: var(--gray); margin-top: 3px; }
-  .contact-map-placeholder { background: var(--dark2); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 40px 24px; text-align: center; color: var(--gray); }
+  .contact-info-box { background: var(--dark2); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 40px 24px; text-align: center; }
 
   /* FOOTER */
   footer { background: var(--dark2); border-top: 1px solid rgba(201,168,76,0.15); padding: 32px 5%; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
-  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.06em; color: var(--gold); }
+  .footer-logo img { height: 40px; width: auto; }
   .footer-copy { font-size: 12px; color: var(--gray); }
 
   /* ADMIN TOGGLE */
@@ -117,7 +126,7 @@
   .admin-modal { background: var(--dark2); border: 1px solid rgba(201,168,76,0.3); border-radius: 8px; width: 100%; max-width: 720px; max-height: 90vh; overflow-y: auto; }
   .admin-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.08); position: sticky; top: 0; background: var(--dark2); z-index: 1; }
   .admin-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 0.05em; color: var(--gold); }
-  .admin-close { background: none; border: none; color: var(--gray); font-size: 22px; cursor: pointer; line-height: 1; padding: 4px 8px; }
+  .admin-close { background: none; border: none; color: var(--gray); font-size: 22px; cursor: pointer; padding: 4px 8px; }
   .admin-close:hover { color: var(--white); }
   .admin-body { padding: 24px; }
   .admin-tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.08); }
@@ -131,6 +140,10 @@
   .admin-form select option { background: var(--dark2); }
   .admin-form textarea { min-height: 80px; resize: vertical; }
   .admin-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .admin-form-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; align-items: end; }
+  .checkbox-row { display: flex; align-items: center; gap: 10px; margin-top: 16px; }
+  .checkbox-row input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--gold); cursor: pointer; }
+  .checkbox-row label { font-size: 13px; color: var(--gray-light); margin: 0; text-transform: none; letter-spacing: 0; cursor: pointer; }
   .btn-admin { background: var(--gold); color: var(--black); border: none; border-radius: 4px; padding: 11px 24px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 20px; letter-spacing: 0.05em; text-transform: uppercase; transition: background 0.2s; }
   .btn-admin:hover { background: var(--gold-light); }
   .btn-admin:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -139,11 +152,12 @@
   .admin-list { list-style: none; }
   .admin-list-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.06); gap: 12px; }
   .admin-list-item:last-child { border-bottom: none; }
-  .item-thumb { width: 48px; height: 48px; border-radius: 4px; object-fit: cover; background: var(--dark3); flex-shrink: 0; }
+  .item-thumb { width: 48px; height: 48px; border-radius: 4px; object-fit: cover; flex-shrink: 0; }
   .item-thumb-placeholder { width: 48px; height: 48px; border-radius: 4px; background: var(--dark3); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--gray); font-size: 20px; }
   .item-info { flex: 1; }
   .item-info strong { font-size: 14px; color: var(--white); }
   .item-info span { font-size: 12px; color: var(--gray); display: block; margin-top: 2px; }
+  .star-badge { font-size: 11px; color: var(--gold); margin-left: 6px; }
   .login-box { max-width: 360px; margin: 0 auto; text-align: center; padding: 20px 0; }
   .login-box h3 { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--gold); margin-bottom: 8px; }
   .login-box p { font-size: 13px; color: var(--gray); margin-bottom: 24px; }
@@ -154,35 +168,41 @@
   .upload-progress { height: 4px; background: var(--dark3); border-radius: 2px; margin-top: 8px; overflow: hidden; display: none; }
   .upload-progress-bar { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s; }
 
+  @media (max-width: 900px) {
+    .hero-img { display: none; }
+    .carousel-item { flex: 0 0 calc(50% - 10px); }
+  }
   @media (max-width: 768px) {
     .nav-links { display: none; }
     .contact-grid { grid-template-columns: 1fr; }
-    .admin-form-row { grid-template-columns: 1fr; }
-    .hero-decor { display: none; }
+    .admin-form-row, .admin-form-row3 { grid-template-columns: 1fr; }
     .stats-bar { gap: 32px; }
+    .carousel-item { flex: 0 0 calc(100% - 0px); }
   }
 </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav>
   <a class="nav-logo" href="#hero">
-    <span style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.06em;color:var(--gold);">CABRAL SPEED</span>
+    <img src="https://raw.githubusercontent.com/TiagoFarias85/cabral-speed/main/IMG-20260601-WA0012.jpg" alt="Cabral Speed Logo">
   </a>
   <ul class="nav-links">
+    <li><a href="#destaques">Destaques</a></li>
     <li><a href="#catalogo">Catálogo</a></li>
     <li><a href="#contato">Contato</a></li>
     <li><a href="#contato" class="nav-cta">Pedir Orçamento</a></li>
   </ul>
 </nav>
 
+<!-- HERO -->
 <section id="hero">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
   <div class="hero-content">
     <div class="hero-tag">⚙ Auto Peças & Serviços</div>
-    <h1 class="hero-title">CABRAL<br><span>SPEED</span></h1>
-    <p class="hero-subtitle">Auto Peças</p>
+    <h1 class="hero-slogan">Performance que move,<br><span>qualidade que fica!</span></h1>
     <p class="hero-desc">Peças de qualidade e serviços mecânicos direto ao ponto. Atendimento pelo WhatsApp — sem complicação, sem demora.</p>
     <div class="hero-actions">
       <a href="https://wa.me/5511951324313?text=Olá! Vi o site e gostaria de um orçamento." target="_blank" class="btn-primary">
@@ -192,31 +212,37 @@
       <a href="#catalogo" class="btn-secondary">Ver Catálogo</a>
     </div>
   </div>
-  <svg class="hero-decor" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <circle cx="200" cy="200" r="120" stroke="#C9A84C" stroke-width="2"/>
-    <circle cx="200" cy="200" r="60" stroke="#C9A84C" stroke-width="2"/>
-    <circle cx="200" cy="200" r="20" fill="#C9A84C"/>
-    <line x1="200" y1="80" x2="200" y2="320" stroke="#C9A84C" stroke-width="1.5"/>
-    <line x1="80" y1="200" x2="320" y2="200" stroke="#C9A84C" stroke-width="1.5"/>
-    <line x1="115" y1="115" x2="285" y2="285" stroke="#C9A84C" stroke-width="1.5"/>
-    <line x1="285" y1="115" x2="115" y2="285" stroke="#C9A84C" stroke-width="1.5"/>
-    <rect x="188" y="60" width="24" height="30" rx="4" fill="#C9A84C"/>
-    <rect x="188" y="310" width="24" height="30" rx="4" fill="#C9A84C"/>
-    <rect x="60" y="188" width="30" height="24" rx="4" fill="#C9A84C"/>
-    <rect x="310" y="188" width="30" height="24" rx="4" fill="#C9A84C"/>
-  </svg>
+  <img class="hero-img" src="https://raw.githubusercontent.com/TiagoFarias85/cabral-speed/main/IMG-20260601-WA0011.jpg" alt="Cabral Speed Auto Peças">
 </section>
 
+<!-- STATS -->
 <div class="stats-bar">
   <div class="stat"><div class="stat-number">+5 anos</div><div class="stat-label">De experiência</div></div>
-  <div class="stat"><div class="stat-number">100%</div><div class="stat-label">Peças originais</div></div>
+  <div class="stat"><div class="stat-number">100%</div><div class="stat-label">Qualidade garantida</div></div>
+  <div class="stat"><div class="stat-number">Entrega</div><div class="stat-label">Rápida</div></div>
   <div class="stat"><div class="stat-number">WhatsApp</div><div class="stat-label">Atendimento direto</div></div>
 </div>
 
+<!-- DESTAQUES CARROSSEL -->
+<section id="destaques">
+  <p class="section-eyebrow">Seleção especial</p>
+  <h2 class="section-title">Destaques</h2>
+  <div class="carousel-wrapper">
+    <div class="carousel-track" id="carousel-track"></div>
+  </div>
+  <div class="carousel-controls" id="carousel-controls" style="display:none;">
+    <button class="carousel-btn-nav" onclick="carouselPrev()">‹</button>
+    <div class="carousel-dots" id="carousel-dots"></div>
+    <button class="carousel-btn-nav" onclick="carouselNext()">›</button>
+  </div>
+  <p id="destaques-empty">Nenhum destaque cadastrado ainda. Marque itens como destaque no painel admin!</p>
+</section>
+
+<!-- CATALOG -->
 <section id="catalogo">
   <p class="section-eyebrow">O que oferecemos</p>
-  <h2 class="section-title">Catálogo</h2>
-  <p class="section-desc">Peças e serviços disponíveis. Entre em contato para confirmar disponibilidade e negociar.</p>
+  <h2 class="section-title">Catálogo Completo</h2>
+  <p style="font-size:15px;color:var(--gray);max-width:500px;line-height:1.7;margin-bottom:48px;">Peças e serviços disponíveis. Entre em contato para confirmar disponibilidade e negociar.</p>
   <div class="filter-bar">
     <button class="filter-btn active" onclick="filterCatalog('all', this)">Todos</button>
     <button class="filter-btn" onclick="filterCatalog('peca', this)">Peças</button>
@@ -227,10 +253,11 @@
   </div>
 </section>
 
+<!-- CONTACT -->
 <section id="contato">
   <p class="section-eyebrow">Fale conosco</p>
   <h2 class="section-title">Contato</h2>
-  <p class="section-desc">Sem loja física. Atendimento 100% online — rápido e direto.</p>
+  <p style="font-size:15px;color:var(--gray);max-width:500px;line-height:1.7;margin-bottom:48px;">Sem loja física. Atendimento 100% online — rápido e direto.</p>
   <div class="contact-grid">
     <div>
       <a href="https://wa.me/5511951324313?text=Olá! Vim pelo site e gostaria de um orçamento." target="_blank" class="contact-method">
@@ -254,23 +281,28 @@
         </div>
       </a>
     </div>
-    <div class="contact-map-placeholder">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="1.5" style="margin-bottom:12px"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+    <div class="contact-info-box">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="1.5" style="margin-bottom:12px;opacity:0.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
       <p style="font-size:15px;color:var(--gray-light);margin-bottom:6px;">Atendimento online</p>
-      <p style="font-size:13px;color:var(--gray);">Sem loja física. Todo atendimento é feito via WhatsApp e Instagram. Entregamos ou combinamos a retirada.</p>
+      <p style="font-size:13px;color:var(--gray);line-height:1.6;">Sem loja física. Todo atendimento é feito via WhatsApp e Instagram. Entregamos ou combinamos a retirada.</p>
       <br>
-      <a href="https://wa.me/5511951324313?text=Olá! Gostaria de saber mais sobre entrega." target="_blank" class="btn-primary" style="margin-top:8px;display:inline-flex;font-size:13px;padding:10px 20px;">Perguntar sobre entrega</a>
+      <a href="https://wa.me/5511951324313?text=Olá! Gostaria de saber mais sobre entrega." target="_blank" class="btn-primary" style="display:inline-flex;font-size:13px;padding:10px 20px;margin-top:8px;">Perguntar sobre entrega</a>
     </div>
   </div>
 </section>
 
+<!-- FOOTER -->
 <footer>
-  <div class="footer-logo">CABRAL SPEED AUTO PEÇAS</div>
+  <div class="footer-logo">
+    <img src="https://raw.githubusercontent.com/TiagoFarias85/cabral-speed/main/IMG-20260601-WA0012.jpg" alt="Cabral Speed">
+  </div>
   <p class="footer-copy">© 2025 Cabral Speed Auto Peças · Todos os direitos reservados</p>
 </footer>
 
+<!-- ADMIN TOGGLE -->
 <button id="admin-toggle" title="Painel Admin" onclick="toggleAdmin()">⚙</button>
 
+<!-- ADMIN PANEL -->
 <div id="admin-panel">
   <div class="admin-modal">
     <div class="admin-header">
@@ -321,6 +353,10 @@
             <div class="upload-progress" id="upload-progress">
               <div class="upload-progress-bar" id="upload-progress-bar"></div>
             </div>
+            <div class="checkbox-row">
+              <input type="checkbox" id="item-featured">
+              <label for="item-featured">⭐ Exibir no carrossel de destaques</label>
+            </div>
             <button class="btn-admin" id="btn-add" onclick="addItem()">+ Adicionar ao Catálogo</button>
             <div id="add-msg"></div>
           </div>
@@ -344,12 +380,7 @@
   async function sbFetch(path, options = {}) {
     const res = await fetch(`${SUPABASE_URL}${path}`, {
       ...options,
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Content-Type': 'application/json',
-        ...(options.headers || {})
-      }
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', ...(options.headers || {}) }
     });
     return res;
   }
@@ -376,17 +407,12 @@
   }
 
   async function uploadImage(file) {
-    // Compress image before upload
     const compressed = await compressImage(file, 800, 0.75);
-    const ext = file.name.split('.').pop();
+    const ext = 'jpg';
     const filename = `${Date.now()}.${ext}`;
     const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filename}`, {
       method: 'POST',
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Content-Type': compressed.type
-      },
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'image/jpeg' },
       body: compressed
     });
     if (!res.ok) { const e = await res.json(); throw new Error(e.message || 'Erro no upload'); }
@@ -394,7 +420,7 @@
   }
 
   async function deleteImage(imageUrl) {
-    if (!imageUrl) return;
+    if (!imageUrl || !imageUrl.includes(BUCKET)) return;
     const filename = imageUrl.split(`/${BUCKET}/`)[1];
     if (!filename) return;
     await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filename}`, {
@@ -403,7 +429,6 @@
     });
   }
 
-  // ─── IMAGE COMPRESSION ───
   function compressImage(file, maxWidth, quality) {
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -423,17 +448,17 @@
     });
   }
 
-  // ─── CATALOG RENDER ───
+  // ─── CATALOG ───
   let allItems = [];
   let currentFilter = 'all';
 
   async function loadCatalog() {
-    const grid = document.getElementById('catalog-grid');
     try {
       allItems = await getItems();
       renderCatalog(currentFilter);
+      renderCarousel();
     } catch(e) {
-      grid.innerHTML = '<p class="catalog-loading">Erro ao carregar catálogo. Tente recarregar a página.</p>';
+      document.getElementById('catalog-grid').innerHTML = '<p class="catalog-loading">Erro ao carregar. Tente recarregar a página.</p>';
     }
   }
 
@@ -441,15 +466,10 @@
     currentFilter = filter;
     const grid = document.getElementById('catalog-grid');
     const items = filter === 'all' ? allItems : allItems.filter(i => i.type === filter);
-    if (items.length === 0) {
-      grid.innerHTML = '<p class="catalog-loading">Nenhum item encontrado.</p>';
-      return;
-    }
+    if (items.length === 0) { grid.innerHTML = '<p class="catalog-loading">Nenhum item encontrado.</p>'; return; }
     grid.innerHTML = items.map(item => `
       <div class="product-card">
-        ${item.image_url
-          ? `<img class="product-img" src="${item.image_url}" alt="${item.name}" loading="lazy">`
-          : `<div class="product-img-placeholder">⚙</div>`}
+        ${item.image_url ? `<img class="product-img" src="${item.image_url}" alt="${item.name}" loading="lazy">` : `<div class="product-img-placeholder">⚙</div>`}
         <div class="product-body">
           <span class="product-badge ${item.type === 'peca' ? 'badge-peca' : 'badge-servico'}">${item.type === 'peca' ? 'Peça' : 'Serviço'}</span>
           <h3 class="product-name">${item.name}</h3>
@@ -467,12 +487,89 @@
     renderCatalog(type);
   }
 
+  // ─── CAROUSEL ───
+  let carouselIndex = 0;
+  let carouselItems = [];
+
+  function renderCarousel() {
+    carouselItems = allItems.filter(i => i.featured);
+    const track = document.getElementById('carousel-track');
+    const controls = document.getElementById('carousel-controls');
+    const empty = document.getElementById('destaques-empty');
+
+    if (carouselItems.length === 0) {
+      track.innerHTML = '';
+      controls.style.display = 'none';
+      empty.style.display = 'block';
+      return;
+    }
+
+    empty.style.display = 'none';
+    track.innerHTML = carouselItems.map(item => `
+      <div class="carousel-item">
+        ${item.image_url ? `<img class="carousel-img" src="${item.image_url}" alt="${item.name}" loading="lazy">` : `<div class="carousel-img-placeholder">⚙</div>`}
+        <div class="carousel-body">
+          <span class="carousel-badge ${item.type === 'peca' ? 'badge-peca' : 'badge-servico'}">${item.type === 'peca' ? 'Peça' : 'Serviço'}</span>
+          <h3 class="carousel-name">${item.name}</h3>
+          <div class="carousel-price">${item.price || ''}</div>
+          <a href="https://wa.me/5511951324313?text=Olá! Tenho interesse em: ${encodeURIComponent(item.name)}" target="_blank" class="carousel-btn">Pedir via WhatsApp ↗</a>
+        </div>
+      </div>
+    `).join('');
+
+    if (carouselItems.length > 1) {
+      controls.style.display = 'flex';
+      const dots = document.getElementById('carousel-dots');
+      dots.innerHTML = carouselItems.map((_, i) => `<div class="carousel-dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})"></div>`).join('');
+    } else {
+      controls.style.display = 'none';
+    }
+
+    carouselIndex = 0;
+    updateCarousel();
+
+    // Auto-play
+    clearInterval(window.carouselTimer);
+    if (carouselItems.length > 1) {
+      window.carouselTimer = setInterval(carouselNext, 4000);
+    }
+  }
+
+  function getVisibleCount() {
+    return window.innerWidth < 768 ? 1 : window.innerWidth < 900 ? 2 : 3;
+  }
+
+  function updateCarousel() {
+    const track = document.getElementById('carousel-track');
+    const itemWidth = track.children[0] ? track.children[0].offsetWidth + 20 : 0;
+    track.style.transform = `translateX(-${carouselIndex * itemWidth}px)`;
+    document.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === carouselIndex));
+  }
+
+  function carouselNext() {
+    const max = Math.max(0, carouselItems.length - getVisibleCount());
+    carouselIndex = carouselIndex >= max ? 0 : carouselIndex + 1;
+    updateCarousel();
+  }
+
+  function carouselPrev() {
+    const max = Math.max(0, carouselItems.length - getVisibleCount());
+    carouselIndex = carouselIndex <= 0 ? max : carouselIndex - 1;
+    updateCarousel();
+  }
+
+  function goToSlide(i) {
+    carouselIndex = i;
+    updateCarousel();
+    clearInterval(window.carouselTimer);
+    window.carouselTimer = setInterval(carouselNext, 4000);
+  }
+
+  window.addEventListener('resize', updateCarousel);
   loadCatalog();
 
   // ─── ADMIN ───
-  function toggleAdmin() {
-    document.getElementById('admin-panel').classList.toggle('open');
-  }
+  function toggleAdmin() { document.getElementById('admin-panel').classList.toggle('open'); }
 
   function adminLogin() {
     const pass = document.getElementById('admin-password').value;
@@ -515,48 +612,42 @@
     const desc = document.getElementById('item-desc').value.trim();
     const price = document.getElementById('item-price').value.trim();
     const type = document.getElementById('item-type').value;
+    const featured = document.getElementById('item-featured').checked;
     const imageFile = document.getElementById('item-image').files[0];
     const msg = document.getElementById('add-msg');
     const btn = document.getElementById('btn-add');
 
-    if (!name || !price) {
-      msg.innerHTML = '<div class="admin-msg error">Preencha ao menos o nome e o preço.</div>';
-      return;
-    }
+    if (!name || !price) { msg.innerHTML = '<div class="admin-msg error">Preencha ao menos o nome e o preço.</div>'; return; }
 
-    btn.disabled = true;
-    btn.textContent = 'Salvando...';
-    msg.innerHTML = '';
+    btn.disabled = true; btn.textContent = 'Salvando...'; msg.innerHTML = '';
 
     try {
       let image_url = null;
-
       if (imageFile) {
-        const progress = document.getElementById('upload-progress');
-        const bar = document.getElementById('upload-progress-bar');
-        progress.style.display = 'block';
-        bar.style.width = '40%';
+        document.getElementById('upload-progress').style.display = 'block';
+        document.getElementById('upload-progress-bar').style.width = '40%';
         image_url = await uploadImage(imageFile);
-        bar.style.width = '100%';
-        setTimeout(() => { progress.style.display = 'none'; bar.style.width = '0%'; }, 600);
+        document.getElementById('upload-progress-bar').style.width = '100%';
+        setTimeout(() => { document.getElementById('upload-progress').style.display = 'none'; document.getElementById('upload-progress-bar').style.width = '0%'; }, 600);
       }
 
-      await insertItem({ type, name, description: desc || null, price, image_url });
+      await insertItem({ type, name, description: desc || null, price, image_url, featured });
       allItems = await getItems();
       renderCatalog(currentFilter);
+      renderCarousel();
 
       document.getElementById('item-name').value = '';
       document.getElementById('item-desc').value = '';
       document.getElementById('item-price').value = '';
       document.getElementById('item-image').value = '';
+      document.getElementById('item-featured').checked = false;
       document.getElementById('img-preview').style.display = 'none';
       msg.innerHTML = '<div class="admin-msg success">✓ Item adicionado com sucesso!</div>';
       setTimeout(() => msg.innerHTML = '', 3000);
     } catch(e) {
       msg.innerHTML = `<div class="admin-msg error">Erro: ${e.message}</div>`;
     } finally {
-      btn.disabled = false;
-      btn.textContent = '+ Adicionar ao Catálogo';
+      btn.disabled = false; btn.textContent = '+ Adicionar ao Catálogo';
     }
   }
 
@@ -567,26 +658,21 @@
       if (imageUrl) await deleteImage(imageUrl);
       allItems = await getItems();
       renderCatalog(currentFilter);
+      renderCarousel();
       renderAdminList();
-    } catch(e) {
-      alert('Erro ao remover: ' + e.message);
-    }
+    } catch(e) { alert('Erro ao remover: ' + e.message); }
   }
 
   function renderAdminList() {
     const list = document.getElementById('admin-item-list');
     const empty = document.getElementById('empty-msg');
-    if (allItems.length === 0) {
-      list.innerHTML = ''; empty.style.display = 'block'; return;
-    }
+    if (allItems.length === 0) { list.innerHTML = ''; empty.style.display = 'block'; return; }
     empty.style.display = 'none';
     list.innerHTML = allItems.map(item => `
       <li class="admin-list-item">
-        ${item.image_url
-          ? `<img class="item-thumb" src="${item.image_url}" alt="${item.name}">`
-          : `<div class="item-thumb-placeholder">⚙</div>`}
+        ${item.image_url ? `<img class="item-thumb" src="${item.image_url}" alt="${item.name}">` : `<div class="item-thumb-placeholder">⚙</div>`}
         <div class="item-info">
-          <strong>${item.name}</strong>
+          <strong>${item.name}${item.featured ? '<span class="star-badge">⭐ Destaque</span>' : ''}</strong>
           <span>${item.type === 'peca' ? 'Peça' : 'Serviço'} · ${item.price}</span>
         </div>
         <button class="btn-delete" onclick="deleteItem('${item.id}', ${item.image_url ? `'${item.image_url}'` : 'null'})">Remover</button>
