@@ -41,6 +41,7 @@
   .hero-desc { font-size: 16px; color: var(--gray-light); line-height: 1.7; max-width: 480px; margin-bottom: 40px; }
   .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
   .hero-img { position: absolute; right: 3%; top: 50%; transform: translateY(-50%); width: clamp(280px, 38vw, 520px); border-radius: 12px; opacity: 0.9; z-index: 1; box-shadow: 0 0 80px rgba(201,168,76,0.15); }
+  .hero-img-mobile { display: none; width: 100%; border-radius: 12px; margin-top: 36px; padding-bottom: 40px; position: relative; z-index: 1; box-shadow: 0 0 40px rgba(201,168,76,0.15); }
   .btn-primary { background: var(--gold); color: var(--black); padding: 14px 28px; border-radius: 4px; font-weight: 600; font-size: 14px; text-decoration: none; letter-spacing: 0.05em; text-transform: uppercase; transition: background 0.2s, transform 0.15s; display: inline-flex; align-items: center; gap: 8px; }
   .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
   .btn-secondary { border: 1px solid rgba(201,168,76,0.4); color: var(--gold); padding: 14px 28px; border-radius: 4px; font-size: 14px; text-decoration: none; letter-spacing: 0.05em; text-transform: uppercase; transition: border-color 0.2s, background 0.2s; display: inline-flex; align-items: center; gap: 8px; }
@@ -173,6 +174,8 @@
   .upload-progress { height: 4px; background: var(--dark3); border-radius: 2px; margin-top: 8px; overflow: hidden; display: none; }
   .upload-progress-bar { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s; }
 
+  .hero-img-mobile { display: none; width: 100%; border-radius: 10px; margin-top: 32px; position: relative; z-index: 1; }
+
   @media (max-width: 900px) {
     .hero-img { display: none; }
     .carousel-item { flex: 0 0 calc(50% - 10px); }
@@ -182,7 +185,10 @@
     .contact-grid { grid-template-columns: 1fr; }
     .admin-form-row, .admin-form-row3 { grid-template-columns: 1fr; }
     .stats-bar { gap: 32px; }
-    .carousel-item { flex: 0 0 calc(100% - 0px); }
+    .carousel-item { flex: 0 0 100%; }
+    #hero { min-height: auto; padding: 90px 5% 40px; flex-direction: column; align-items: flex-start; }
+    .hero-img-mobile { display: block; }
+    .hero-banner-mobile { display: block !important; }
   }
 </style>
 </head>
@@ -219,6 +225,11 @@
   </div>
   <img class="hero-img" src="https://raw.githubusercontent.com/TiagoFarias85/cabral-speed/main/IMG-20260601-WA0011.jpg" alt="Cabral Speed Auto Peças">
 </section>
+
+<!-- BANNER MOBILE -->
+<div style="background:var(--black);padding:0 5% 32px;">
+  <img class="hero-banner-mobile" src="https://raw.githubusercontent.com/TiagoFarias85/cabral-speed/main/IMG-20260601-WA0011.jpg" alt="Cabral Speed Auto Peças">
+</div>
 
 <!-- STATS -->
 <div class="stats-bar">
