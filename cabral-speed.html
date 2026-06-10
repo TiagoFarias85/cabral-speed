@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cabral Speed Auto Peças</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --gold-dark: #8A6820;
+    --black: #0A0A0A;
+    --dark: #111111;
+    --dark2: #1A1A1A;
+    --dark3: #242424;
+    --gray: #888;
+    --gray-light: #BBBBB8;
+    --white: #F5F5F2;
+    --red: #C0392B;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: var(--black); color: var(--white); min-height: 100vh; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(10,10,10,0.95);
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5%; height: 64px;
+    backdrop-filter: blur(8px);
+  }
+  .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a { color: var(--gray-light); text-decoration: none; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-cta { background: var(--gold); color: var(--black) !important; padding: 8px 18px; border-radius: 4px; font-weight: 600 !important; }
+  .nav-cta:hover { background: var(--gold-light) !important; color: var(--black) !important; }
+
+  /* HERO */
+  #hero { min-height: 100vh; display: flex; align-items: center; padding: 64px 5% 0; position: relative; overflow: hidden; }
+  .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 80% at 80% 50%, rgba(201,168,76,0.07) 0%, transparent 70%), linear-gradient(135deg, #0A0A0A 0%, #141414 100%); }
+  .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px); background-size: 60px 60px; }
+  .hero-content { position: relative; z-index: 1; max-width: 680px; }
+  .hero-tag { display: inline-block; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); border: 1px solid rgba(201,168,76,0.4); padding: 4px 14px; border-radius: 2px; margin-bottom: 24px; }
+  .hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(56px, 8vw, 96px); line-height: 0.95; letter-spacing: 0.02em; color: var(--white); margin-bottom: 8px; }
+  .hero-title span { color: var(--gold); }
+  .hero-subtitle { font-family: 'Bebas Neue', sans-serif; font-size: clamp(28px, 4vw, 48px); color: var(--gray); letter-spacing: 0.05em; margin-bottom: 28px; }
+  .hero-desc { font-size: 16px; color: var(--gray-light); line-height: 1.7; max-width: 480px; margin-bottom: 40px; }
+  .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+  .btn-primary { background: var(--gold); color: var(--black); padding: 14px 28px; border-radius: 4px; font-weight: 600; font-size: 14px; text-decoration: none; letter-spacing: 0.05em; text-transform: uppercase; transition: background 0.2s, transform 0.15s; display: inline-flex; align-items: center; gap: 8px; }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+  .btn-secondary { border: 1px solid rgba(201,168,76,0.4); color: var(--gold); padding: 14px 28px; border-radius: 4px; font-size: 14px; text-decoration: none; letter-spacing: 0.05em; text-transform: uppercase; transition: border-color 0.2s, background 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+  .btn-secondary:hover { border-color: var(--gold); background: rgba(201,168,76,0.08); }
+  .hero-decor { position: absolute; right: 5%; top: 50%; transform: translateY(-50%); width: clamp(200px, 35vw, 420px); opacity: 0.12; z-index: 0; }
+
+  /* STATS */
+  .stats-bar { background: var(--dark2); border-top: 1px solid rgba(201,168,76,0.15); border-bottom: 1px solid rgba(201,168,76,0.15); padding: 28px 5%; display: flex; justify-content: center; gap: 60px; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat-number { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--gold); letter-spacing: 0.05em; }
+  .stat-label { font-size: 11px; color: var(--gray); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 2px; }
+
+  /* SECTION */
+  section { padding: 80px 5%; }
+  .section-eyebrow { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 5vw, 56px); color: var(--white); letter-spacing: 0.03em; margin-bottom: 12px; }
+  .section-desc { font-size: 15px; color: var(--gray); max-width: 500px; line-height: 1.7; margin-bottom: 48px; }
+
+  /* CATALOG */
+  #catalogo { background: var(--dark); }
+  .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; }
+  .filter-btn { padding: 7px 18px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.12); background: transparent; color: var(--gray-light); font-size: 13px; cursor: pointer; letter-spacing: 0.05em; transition: all 0.2s; }
+  .filter-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.08); }
+  .filter-btn:hover:not(.active) { border-color: rgba(255,255,255,0.3); color: var(--white); }
+  .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+  .product-card { background: var(--dark2); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; overflow: hidden; transition: border-color 0.2s, transform 0.2s; }
+  .product-card:hover { border-color: rgba(201,168,76,0.35); transform: translateY(-2px); }
+  .product-img { width: 100%; height: 180px; object-fit: cover; display: block; }
+  .product-img-placeholder { width: 100%; height: 180px; background: var(--dark3); display: flex; align-items: center; justify-content: center; color: rgba(201,168,76,0.25); font-size: 48px; }
+  .product-body { padding: 16px 18px 20px; }
+  .product-badge { display: inline-block; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px; margin-bottom: 10px; }
+  .badge-peca { background: rgba(201,168,76,0.15); color: var(--gold); }
+  .badge-servico { background: rgba(59,130,246,0.15); color: #60A5FA; }
+  .product-name { font-size: 15px; font-weight: 600; color: var(--white); margin-bottom: 6px; }
+  .product-desc { font-size: 13px; color: var(--gray); line-height: 1.5; margin-bottom: 14px; }
+  .product-price { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--gold); letter-spacing: 0.05em; }
+  .product-whatsapp { display: block; margin-top: 12px; background: #1a472a; color: #4ade80; border: 1px solid rgba(74,222,128,0.2); border-radius: 4px; padding: 8px 0; text-align: center; font-size: 13px; font-weight: 500; text-decoration: none; transition: background 0.2s; }
+  .product-whatsapp:hover { background: #1e5c34; }
+  .catalog-loading { color: var(--gray); font-size: 15px; padding: 40px 0; text-align: center; }
+
+  /* CONTACT */
+  #contato { background: var(--black); }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+  .contact-method { display: flex; gap: 16px; align-items: flex-start; padding: 24px; background: var(--dark2); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; margin-bottom: 16px; text-decoration: none; transition: border-color 0.2s; }
+  .contact-method:hover { border-color: rgba(201,168,76,0.35); }
+  .contact-icon { width: 44px; height: 44px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .icon-whatsapp { background: rgba(74,222,128,0.12); color: #4ade80; }
+  .icon-instagram { background: rgba(236,72,153,0.12); color: #f472b6; }
+  .contact-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray); margin-bottom: 4px; }
+  .contact-value { font-size: 15px; font-weight: 500; color: var(--white); }
+  .contact-note { font-size: 13px; color: var(--gray); margin-top: 3px; }
+  .contact-map-placeholder { background: var(--dark2); border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 40px 24px; text-align: center; color: var(--gray); }
+
+  /* FOOTER */
+  footer { background: var(--dark2); border-top: 1px solid rgba(201,168,76,0.15); padding: 32px 5%; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.06em; color: var(--gold); }
+  .footer-copy { font-size: 12px; color: var(--gray); }
+
+  /* ADMIN TOGGLE */
+  #admin-toggle { position: fixed; bottom: 24px; right: 24px; z-index: 200; background: var(--dark3); border: 1px solid rgba(201,168,76,0.4); color: var(--gold); width: 48px; height: 48px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+  #admin-toggle:hover { background: rgba(201,168,76,0.15); }
+
+  /* ADMIN PANEL */
+  #admin-panel { display: none; position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px; }
+  #admin-panel.open { display: flex; }
+  .admin-modal { background: var(--dark2); border: 1px solid rgba(201,168,76,0.3); border-radius: 8px; width: 100%; max-width: 720px; max-height: 90vh; overflow-y: auto; }
+  .admin-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.08); position: sticky; top: 0; background: var(--dark2); z-index: 1; }
+  .admin-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 0.05em; color: var(--gold); }
+  .admin-close { background: none; border: none; color: var(--gray); font-size: 22px; cursor: pointer; line-height: 1; padding: 4px 8px; }
+  .admin-close:hover { color: var(--white); }
+  .admin-body { padding: 24px; }
+  .admin-tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .admin-tab { padding: 10px 20px; background: none; border: none; color: var(--gray); font-size: 14px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.2s; }
+  .admin-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .admin-form label { display: block; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray); margin-bottom: 6px; margin-top: 16px; }
+  .admin-form input, .admin-form select, .admin-form textarea { width: 100%; background: var(--dark3); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 10px 12px; color: var(--white); font-size: 14px; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s; }
+  .admin-form input:focus, .admin-form select:focus, .admin-form textarea:focus { border-color: var(--gold); }
+  .admin-form select option { background: var(--dark2); }
+  .admin-form textarea { min-height: 80px; resize: vertical; }
+  .admin-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .btn-admin { background: var(--gold); color: var(--black); border: none; border-radius: 4px; padding: 11px 24px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 20px; letter-spacing: 0.05em; text-transform: uppercase; transition: background 0.2s; }
+  .btn-admin:hover { background: var(--gold-light); }
+  .btn-admin:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-delete { background: transparent; color: var(--red); border: 1px solid rgba(192,57,43,0.4); border-radius: 4px; padding: 6px 12px; font-size: 12px; cursor: pointer; transition: background 0.2s; }
+  .btn-delete:hover { background: rgba(192,57,43,0.1); }
+  .admin-list { list-style: none; }
+  .admin-list-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.06); gap: 12px; }
+  .admin-list-item:last-child { border-bottom: none; }
+  .item-thumb { width: 48px; height: 48px; border-radius: 4px; object-fit: cover; background: var(--dark3); flex-shrink: 0; }
+  .item-thumb-placeholder { width: 48px; height: 48px; border-radius: 4px; background: var(--dark3); flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--gray); font-size: 20px; }
+  .item-info { flex: 1; }
+  .item-info strong { font-size: 14px; color: var(--white); }
+  .item-info span { font-size: 12px; color: var(--gray); display: block; margin-top: 2px; }
+  .login-box { max-width: 360px; margin: 0 auto; text-align: center; padding: 20px 0; }
+  .login-box h3 { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--gold); margin-bottom: 8px; }
+  .login-box p { font-size: 13px; color: var(--gray); margin-bottom: 24px; }
+  .admin-msg { padding: 10px 14px; border-radius: 4px; font-size: 13px; margin-top: 8px; }
+  .admin-msg.success { background: rgba(74,222,128,0.1); color: #4ade80; border: 1px solid rgba(74,222,128,0.2); }
+  .admin-msg.error { background: rgba(192,57,43,0.1); color: #f87171; border: 1px solid rgba(192,57,43,0.2); }
+  .img-preview { width: 100%; height: 160px; object-fit: cover; border-radius: 4px; margin-top: 8px; display: none; }
+  .upload-progress { height: 4px; background: var(--dark3); border-radius: 2px; margin-top: 8px; overflow: hidden; display: none; }
+  .upload-progress-bar { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s; }
+
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .admin-form-row { grid-template-columns: 1fr; }
+    .hero-decor { display: none; }
+    .stats-bar { gap: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#hero">
+    <span style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.06em;color:var(--gold);">CABRAL SPEED</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#catalogo">Catálogo</a></li>
+    <li><a href="#contato">Contato</a></li>
+    <li><a href="#contato" class="nav-cta">Pedir Orçamento</a></li>
+  </ul>
+</nav>
+
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-tag">⚙ Auto Peças & Serviços</div>
+    <h1 class="hero-title">CABRAL<br><span>SPEED</span></h1>
+    <p class="hero-subtitle">Auto Peças</p>
+    <p class="hero-desc">Peças de qualidade e serviços mecânicos direto ao ponto. Atendimento pelo WhatsApp — sem complicação, sem demora.</p>
+    <div class="hero-actions">
+      <a href="https://wa.me/5511951324313?text=Olá! Vi o site e gostaria de um orçamento." target="_blank" class="btn-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Chamar no WhatsApp
+      </a>
+      <a href="#catalogo" class="btn-secondary">Ver Catálogo</a>
+    </div>
+  </div>
+  <svg class="hero-decor" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="200" cy="200" r="120" stroke="#C9A84C" stroke-width="2"/>
+    <circle cx="200" cy="200" r="60" stroke="#C9A84C" stroke-width="2"/>
+    <circle cx="200" cy="200" r="20" fill="#C9A84C"/>
+    <line x1="200" y1="80" x2="200" y2="320" stroke="#C9A84C" stroke-width="1.5"/>
+    <line x1="80" y1="200" x2="320" y2="200" stroke="#C9A84C" stroke-width="1.5"/>
+    <line x1="115" y1="115" x2="285" y2="285" stroke="#C9A84C" stroke-width="1.5"/>
+    <line x1="285" y1="115" x2="115" y2="285" stroke="#C9A84C" stroke-width="1.5"/>
+    <rect x="188" y="60" width="24" height="30" rx="4" fill="#C9A84C"/>
+    <rect x="188" y="310" width="24" height="30" rx="4" fill="#C9A84C"/>
+    <rect x="60" y="188" width="30" height="24" rx="4" fill="#C9A84C"/>
+    <rect x="310" y="188" width="30" height="24" rx="4" fill="#C9A84C"/>
+  </svg>
+</section>
+
+<div class="stats-bar">
+  <div class="stat"><div class="stat-number">+5 anos</div><div class="stat-label">De experiência</div></div>
+  <div class="stat"><div class="stat-number">100%</div><div class="stat-label">Peças originais</div></div>
+  <div class="stat"><div class="stat-number">WhatsApp</div><div class="stat-label">Atendimento direto</div></div>
+</div>
+
+<section id="catalogo">
+  <p class="section-eyebrow">O que oferecemos</p>
+  <h2 class="section-title">Catálogo</h2>
+  <p class="section-desc">Peças e serviços disponíveis. Entre em contato para confirmar disponibilidade e negociar.</p>
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterCatalog('all', this)">Todos</button>
+    <button class="filter-btn" onclick="filterCatalog('peca', this)">Peças</button>
+    <button class="filter-btn" onclick="filterCatalog('servico', this)">Serviços</button>
+  </div>
+  <div class="catalog-grid" id="catalog-grid">
+    <p class="catalog-loading">Carregando catálogo...</p>
+  </div>
+</section>
+
+<section id="contato">
+  <p class="section-eyebrow">Fale conosco</p>
+  <h2 class="section-title">Contato</h2>
+  <p class="section-desc">Sem loja física. Atendimento 100% online — rápido e direto.</p>
+  <div class="contact-grid">
+    <div>
+      <a href="https://wa.me/5511951324313?text=Olá! Vim pelo site e gostaria de um orçamento." target="_blank" class="contact-method">
+        <div class="contact-icon icon-whatsapp">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </div>
+        <div>
+          <p class="contact-label">WhatsApp</p>
+          <p class="contact-value">(11) 95132-4313</p>
+          <p class="contact-note">Clique para abrir conversa</p>
+        </div>
+      </a>
+      <a href="https://instagram.com/cabralspeed.autopecas" target="_blank" class="contact-method">
+        <div class="contact-icon icon-instagram">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        </div>
+        <div>
+          <p class="contact-label">Instagram</p>
+          <p class="contact-value">@cabralspeed.autopecas</p>
+          <p class="contact-note">Acompanhe as novidades</p>
+        </div>
+      </a>
+    </div>
+    <div class="contact-map-placeholder">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="1.5" style="margin-bottom:12px"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+      <p style="font-size:15px;color:var(--gray-light);margin-bottom:6px;">Atendimento online</p>
+      <p style="font-size:13px;color:var(--gray);">Sem loja física. Todo atendimento é feito via WhatsApp e Instagram. Entregamos ou combinamos a retirada.</p>
+      <br>
+      <a href="https://wa.me/5511951324313?text=Olá! Gostaria de saber mais sobre entrega." target="_blank" class="btn-primary" style="margin-top:8px;display:inline-flex;font-size:13px;padding:10px 20px;">Perguntar sobre entrega</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">CABRAL SPEED AUTO PEÇAS</div>
+  <p class="footer-copy">© 2025 Cabral Speed Auto Peças · Todos os direitos reservados</p>
+</footer>
+
+<button id="admin-toggle" title="Painel Admin" onclick="toggleAdmin()">⚙</button>
+
+<div id="admin-panel">
+  <div class="admin-modal">
+    <div class="admin-header">
+      <h2>⚙ Painel Admin</h2>
+      <button class="admin-close" onclick="toggleAdmin()">✕</button>
+    </div>
+    <div class="admin-body">
+      <div id="admin-login">
+        <div class="login-box">
+          <h3>Acesso Restrito</h3>
+          <p>Digite a senha para gerenciar o catálogo</p>
+          <div class="admin-form">
+            <label>Senha</label>
+            <input type="password" id="admin-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')adminLogin()">
+            <button class="btn-admin" style="width:100%;margin-top:16px;" onclick="adminLogin()">Entrar</button>
+            <div id="login-msg"></div>
+          </div>
+        </div>
+      </div>
+      <div id="admin-dashboard" style="display:none;">
+        <div class="admin-tabs">
+          <button class="admin-tab active" onclick="switchTab('add', this)">Adicionar Item</button>
+          <button class="admin-tab" onclick="switchTab('manage', this)">Gerenciar</button>
+          <button class="admin-tab" onclick="adminLogout()" style="margin-left:auto;color:var(--red);">Sair</button>
+        </div>
+        <div id="tab-add" class="tab-content active">
+          <div class="admin-form">
+            <div class="admin-form-row">
+              <div>
+                <label>Tipo</label>
+                <select id="item-type">
+                  <option value="peca">Peça</option>
+                  <option value="servico">Serviço</option>
+                </select>
+              </div>
+              <div>
+                <label>Preço</label>
+                <input type="text" id="item-price" placeholder="Ex: R$ 150,00 ou Consultar">
+              </div>
+            </div>
+            <label>Nome do item</label>
+            <input type="text" id="item-name" placeholder="Ex: Pastilha de freio Bosch">
+            <label>Descrição</label>
+            <textarea id="item-desc" placeholder="Descreva o item brevemente..."></textarea>
+            <label>Foto do item</label>
+            <input type="file" id="item-image" accept="image/*" onchange="previewImage(this)">
+            <img id="img-preview" class="img-preview" alt="Preview">
+            <div class="upload-progress" id="upload-progress">
+              <div class="upload-progress-bar" id="upload-progress-bar"></div>
+            </div>
+            <button class="btn-admin" id="btn-add" onclick="addItem()">+ Adicionar ao Catálogo</button>
+            <div id="add-msg"></div>
+          </div>
+        </div>
+        <div id="tab-manage" class="tab-content">
+          <ul class="admin-list" id="admin-item-list"></ul>
+          <p id="empty-msg" style="color:var(--gray);font-size:14px;text-align:center;padding:32px 0;display:none;">Nenhum item no catálogo ainda.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const SUPABASE_URL = 'https://omloetzoukzkrrtyazwq.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_9ndkkgTSt2ry-ehPUv5fug_FZH4hIRq';
+  const ADMIN_PASS = 'cabral2025';
+  const BUCKET = 'product-images';
+
+  // ─── SUPABASE HELPERS ───
+  async function sbFetch(path, options = {}) {
+    const res = await fetch(`${SUPABASE_URL}${path}`, {
+      ...options,
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        ...(options.headers || {})
+      }
+    });
+    return res;
+  }
+
+  async function getItems() {
+    const res = await sbFetch('/rest/v1/catalog?select=*&order=created_at.desc');
+    if (!res.ok) throw new Error('Erro ao carregar catálogo');
+    return res.json();
+  }
+
+  async function insertItem(item) {
+    const res = await sbFetch('/rest/v1/catalog', {
+      method: 'POST',
+      headers: { 'Prefer': 'return=representation' },
+      body: JSON.stringify(item)
+    });
+    if (!res.ok) { const e = await res.json(); throw new Error(e.message || 'Erro ao salvar'); }
+    return res.json();
+  }
+
+  async function deleteItemDB(id) {
+    const res = await sbFetch(`/rest/v1/catalog?id=eq.${id}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Erro ao remover');
+  }
+
+  async function uploadImage(file) {
+    // Compress image before upload
+    const compressed = await compressImage(file, 800, 0.75);
+    const ext = file.name.split('.').pop();
+    const filename = `${Date.now()}.${ext}`;
+    const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filename}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': compressed.type
+      },
+      body: compressed
+    });
+    if (!res.ok) { const e = await res.json(); throw new Error(e.message || 'Erro no upload'); }
+    return `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${filename}`;
+  }
+
+  async function deleteImage(imageUrl) {
+    if (!imageUrl) return;
+    const filename = imageUrl.split(`/${BUCKET}/`)[1];
+    if (!filename) return;
+    await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filename}`, {
+      method: 'DELETE',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    });
+  }
+
+  // ─── IMAGE COMPRESSION ───
+  function compressImage(file, maxWidth, quality) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let w = img.width, h = img.height;
+          if (w > maxWidth) { h = (h * maxWidth) / w; w = maxWidth; }
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          canvas.toBlob(resolve, 'image/jpeg', quality);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ─── CATALOG RENDER ───
+  let allItems = [];
+  let currentFilter = 'all';
+
+  async function loadCatalog() {
+    const grid = document.getElementById('catalog-grid');
+    try {
+      allItems = await getItems();
+      renderCatalog(currentFilter);
+    } catch(e) {
+      grid.innerHTML = '<p class="catalog-loading">Erro ao carregar catálogo. Tente recarregar a página.</p>';
+    }
+  }
+
+  function renderCatalog(filter) {
+    currentFilter = filter;
+    const grid = document.getElementById('catalog-grid');
+    const items = filter === 'all' ? allItems : allItems.filter(i => i.type === filter);
+    if (items.length === 0) {
+      grid.innerHTML = '<p class="catalog-loading">Nenhum item encontrado.</p>';
+      return;
+    }
+    grid.innerHTML = items.map(item => `
+      <div class="product-card">
+        ${item.image_url
+          ? `<img class="product-img" src="${item.image_url}" alt="${item.name}" loading="lazy">`
+          : `<div class="product-img-placeholder">⚙</div>`}
+        <div class="product-body">
+          <span class="product-badge ${item.type === 'peca' ? 'badge-peca' : 'badge-servico'}">${item.type === 'peca' ? 'Peça' : 'Serviço'}</span>
+          <h3 class="product-name">${item.name}</h3>
+          <p class="product-desc">${item.description || ''}</p>
+          <div class="product-price">${item.price || ''}</div>
+          <a href="https://wa.me/5511951324313?text=Olá! Tenho interesse em: ${encodeURIComponent(item.name)}" target="_blank" class="product-whatsapp">Pedir via WhatsApp ↗</a>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function filterCatalog(type, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCatalog(type);
+  }
+
+  loadCatalog();
+
+  // ─── ADMIN ───
+  function toggleAdmin() {
+    document.getElementById('admin-panel').classList.toggle('open');
+  }
+
+  function adminLogin() {
+    const pass = document.getElementById('admin-password').value;
+    const msg = document.getElementById('login-msg');
+    if (pass === ADMIN_PASS) {
+      document.getElementById('admin-login').style.display = 'none';
+      document.getElementById('admin-dashboard').style.display = 'block';
+      renderAdminList();
+    } else {
+      msg.innerHTML = '<div class="admin-msg error">Senha incorreta.</div>';
+    }
+  }
+
+  function adminLogout() {
+    document.getElementById('admin-password').value = '';
+    document.getElementById('login-msg').innerHTML = '';
+    document.getElementById('admin-login').style.display = 'block';
+    document.getElementById('admin-dashboard').style.display = 'none';
+  }
+
+  function switchTab(tab, btn) {
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    if (btn) btn.classList.add('active');
+    if (tab === 'manage') renderAdminList();
+  }
+
+  function previewImage(input) {
+    const preview = document.getElementById('img-preview');
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  async function addItem() {
+    const name = document.getElementById('item-name').value.trim();
+    const desc = document.getElementById('item-desc').value.trim();
+    const price = document.getElementById('item-price').value.trim();
+    const type = document.getElementById('item-type').value;
+    const imageFile = document.getElementById('item-image').files[0];
+    const msg = document.getElementById('add-msg');
+    const btn = document.getElementById('btn-add');
+
+    if (!name || !price) {
+      msg.innerHTML = '<div class="admin-msg error">Preencha ao menos o nome e o preço.</div>';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Salvando...';
+    msg.innerHTML = '';
+
+    try {
+      let image_url = null;
+
+      if (imageFile) {
+        const progress = document.getElementById('upload-progress');
+        const bar = document.getElementById('upload-progress-bar');
+        progress.style.display = 'block';
+        bar.style.width = '40%';
+        image_url = await uploadImage(imageFile);
+        bar.style.width = '100%';
+        setTimeout(() => { progress.style.display = 'none'; bar.style.width = '0%'; }, 600);
+      }
+
+      await insertItem({ type, name, description: desc || null, price, image_url });
+      allItems = await getItems();
+      renderCatalog(currentFilter);
+
+      document.getElementById('item-name').value = '';
+      document.getElementById('item-desc').value = '';
+      document.getElementById('item-price').value = '';
+      document.getElementById('item-image').value = '';
+      document.getElementById('img-preview').style.display = 'none';
+      msg.innerHTML = '<div class="admin-msg success">✓ Item adicionado com sucesso!</div>';
+      setTimeout(() => msg.innerHTML = '', 3000);
+    } catch(e) {
+      msg.innerHTML = `<div class="admin-msg error">Erro: ${e.message}</div>`;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '+ Adicionar ao Catálogo';
+    }
+  }
+
+  async function deleteItem(id, imageUrl) {
+    if (!confirm('Remover este item do catálogo?')) return;
+    try {
+      await deleteItemDB(id);
+      if (imageUrl) await deleteImage(imageUrl);
+      allItems = await getItems();
+      renderCatalog(currentFilter);
+      renderAdminList();
+    } catch(e) {
+      alert('Erro ao remover: ' + e.message);
+    }
+  }
+
+  function renderAdminList() {
+    const list = document.getElementById('admin-item-list');
+    const empty = document.getElementById('empty-msg');
+    if (allItems.length === 0) {
+      list.innerHTML = ''; empty.style.display = 'block'; return;
+    }
+    empty.style.display = 'none';
+    list.innerHTML = allItems.map(item => `
+      <li class="admin-list-item">
+        ${item.image_url
+          ? `<img class="item-thumb" src="${item.image_url}" alt="${item.name}">`
+          : `<div class="item-thumb-placeholder">⚙</div>`}
+        <div class="item-info">
+          <strong>${item.name}</strong>
+          <span>${item.type === 'peca' ? 'Peça' : 'Serviço'} · ${item.price}</span>
+        </div>
+        <button class="btn-delete" onclick="deleteItem('${item.id}', ${item.image_url ? `'${item.image_url}'` : 'null'})">Remover</button>
+      </li>
+    `).join('');
+  }
+</script>
+</body>
+</html>
