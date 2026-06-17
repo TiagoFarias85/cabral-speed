@@ -41,6 +41,7 @@
   .hero-desc { font-size: 16px; color: var(--gray-light); line-height: 1.7; max-width: 480px; margin-bottom: 40px; }
   .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
   .hero-img { position: absolute; right: 3%; top: 50%; transform: translateY(-50%); width: clamp(280px, 38vw, 520px); border-radius: 12px; opacity: 0.9; z-index: 1; box-shadow: 0 0 80px rgba(201,168,76,0.15); }
+  .hero-img-mobile { display: none; width: 100%; border-radius: 12px; margin-top: 36px; padding-bottom: 40px; position: relative; z-index: 1; box-shadow: 0 0 40px rgba(201,168,76,0.15); }
   .btn-primary { background: var(--gold); color: var(--black); padding: 14px 28px; border-radius: 4px; font-weight: 600; font-size: 14px; text-decoration: none; letter-spacing: 0.05em; text-transform: uppercase; transition: background 0.2s, transform 0.15s; display: inline-flex; align-items: center; gap: 8px; }
   .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
   .btn-secondary { border: 1px solid rgba(201,168,76,0.4); color: var(--gold); padding: 14px 28px; border-radius: 4px; font-size: 14px; text-decoration: none; letter-spacing: 0.05em; text-transform: uppercase; transition: border-color 0.2s, background 0.2s; display: inline-flex; align-items: center; gap: 8px; }
@@ -140,6 +141,7 @@
   .admin-form select option { background: var(--dark2); }
   .admin-form textarea { min-height: 80px; resize: vertical; }
   .admin-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .admin-form-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; align-items: end; }
   .checkbox-row { display: flex; align-items: center; gap: 10px; margin-top: 16px; }
   .checkbox-row input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--gold); cursor: pointer; }
   .checkbox-row label { font-size: 13px; color: var(--gray-light); margin: 0; text-transform: none; letter-spacing: 0; cursor: pointer; }
@@ -172,6 +174,8 @@
   .upload-progress { height: 4px; background: var(--dark3); border-radius: 2px; margin-top: 8px; overflow: hidden; display: none; }
   .upload-progress-bar { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s; }
 
+  .hero-img-mobile { display: none; width: 100%; border-radius: 10px; margin-top: 32px; position: relative; z-index: 1; }
+
   @media (max-width: 900px) {
     .hero-img { display: none; }
     .carousel-item { flex: 0 0 calc(50% - 10px); }
@@ -179,10 +183,12 @@
   @media (max-width: 768px) {
     .nav-links { display: none; }
     .contact-grid { grid-template-columns: 1fr; }
-    .admin-form-row { grid-template-columns: 1fr; }
+    .admin-form-row, .admin-form-row3 { grid-template-columns: 1fr; }
     .stats-bar { gap: 32px; }
     .carousel-item { flex: 0 0 100%; }
     #hero { min-height: auto; padding: 90px 5% 40px; flex-direction: column; align-items: flex-start; }
+    .hero-img-mobile { display: block; }
+    .hero-banner-mobile { display: block !important; }
     #banner-mobile-wrap { display: block !important; }
   }
 </style>
@@ -246,7 +252,7 @@
     <div class="carousel-dots" id="carousel-dots"></div>
     <button class="carousel-btn-nav" onclick="carouselNext()">›</button>
   </div>
-  <p id="destaques-empty">Nenhum destaque cadastrado ainda.</p>
+  <p id="destaques-empty">Nenhum destaque cadastrado ainda. Marque itens como destaque no painel admin!</p>
 </section>
 
 <!-- CATALOG -->
@@ -386,48 +392,95 @@
 </div>
 
 <script>
-  // ════════════════════════════════════════════════════
-  //  ÚNICA configuração necessária:
-  //  Substitua pela URL da sua Azure Function após o deploy
-  // ════════════════════════════════════════════════════
-  const API_URL = 'https://SEU-APP.azurewebsites.net/api/cabral';
+  const SUPABASE_URL = 'https://omloetzoukzkrrtyazwq.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_9ndkkgTSt2ry-ehPUv5fug_FZH4hIRq';
+  const ADMIN_PASS = 'cabral2025';
+  const ADMIN_TOKEN = 'cabral-speed-admin-2025';
+  const BUCKET = 'product-images';
 
-  // Senha fica APENAS em memória durante a sessão — nunca no código
-  let adminPassSession = null;
+  // ─── SUPABASE HELPERS ───
+  async function sbFetch(path, options = {}) {
+    const res = await fetch(`${SUPABASE_URL}${path}`, {
+      ...options,
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', ...(options.method && ['POST','PATCH','DELETE'].includes(options.method) ? { 'x-admin-token': ADMIN_TOKEN } : {}), ...(options.headers || {}) }
+    });
+    return res;
+  }
 
-  // ─── API HELPERS ────────────────────────────────────
-  async function apiGet(action) {
-    const res = await fetch(`${API_URL}?action=${action}`);
-    if (!res.ok) throw new Error('Erro ao carregar dados');
+  async function getItems() {
+    const res = await sbFetch('/rest/v1/catalog?select=*&order=created_at.desc');
+    if (!res.ok) throw new Error('Erro ao carregar catálogo');
     return res.json();
   }
 
-  async function apiPost(action, body) {
-    const res = await fetch(API_URL, {
+  async function insertItem(item) {
+    const res = await sbFetch('/rest/v1/catalog', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-admin-pass': adminPassSession   // senha só vai no header, nunca no JS
-      },
-      body: JSON.stringify({ action, ...body })
+      headers: { 'Prefer': 'return=representation' },
+      body: JSON.stringify(item)
     });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Erro na operação');
-    return data;
+    if (!res.ok) { const e = await res.json(); throw new Error(e.message || 'Erro ao salvar'); }
+    return res.json();
   }
 
-  // ─── CATALOG ────────────────────────────────────────
+  async function deleteItemDB(id) {
+    const res = await sbFetch(`/rest/v1/catalog?id=eq.${id}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Erro ao remover');
+  }
+
+  async function uploadImage(file) {
+    const compressed = await compressImage(file, 800, 0.75);
+    const ext = 'jpg';
+    const filename = `${Date.now()}.${ext}`;
+    const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filename}`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'image/jpeg', 'x-admin-token': ADMIN_TOKEN },
+      body: compressed
+    });
+    if (!res.ok) { const e = await res.json(); throw new Error(e.message || 'Erro no upload'); }
+    return `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${filename}`;
+  }
+
+  async function deleteImage(imageUrl) {
+    if (!imageUrl || !imageUrl.includes(BUCKET)) return;
+    const filename = imageUrl.split(`/${BUCKET}/`)[1];
+    if (!filename) return;
+    await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filename}`, {
+      method: 'DELETE',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'x-admin-token': ADMIN_TOKEN }
+    });
+  }
+
+  function compressImage(file, maxWidth, quality) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let w = img.width, h = img.height;
+          if (w > maxWidth) { h = (h * maxWidth) / w; w = maxWidth; }
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          canvas.toBlob(resolve, 'image/jpeg', quality);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ─── CATALOG ───
   let allItems = [];
   let currentFilter = 'all';
 
   async function loadCatalog() {
     try {
-      allItems = await apiGet('catalog');
+      allItems = await getItems();
       renderCatalog(currentFilter);
       renderCarousel();
     } catch(e) {
-      document.getElementById('catalog-grid').innerHTML =
-        '<p class="catalog-loading">Erro ao carregar. Tente recarregar a página.</p>';
+      document.getElementById('catalog-grid').innerHTML = '<p class="catalog-loading">Erro ao carregar. Tente recarregar a página.</p>';
     }
   }
 
@@ -438,18 +491,13 @@
     if (items.length === 0) { grid.innerHTML = '<p class="catalog-loading">Nenhum item encontrado.</p>'; return; }
     grid.innerHTML = items.map(item => `
       <div class="product-card">
-        ${item.image_url
-          ? `<img class="product-img" src="${item.image_url}" alt="${item.name}" loading="lazy">`
-          : `<div class="product-img-placeholder">⚙</div>`}
+        ${item.image_url ? `<img class="product-img" src="${item.image_url}" alt="${item.name}" loading="lazy">` : `<div class="product-img-placeholder">⚙</div>`}
         <div class="product-body">
-          <span class="product-badge ${item.type === 'peca' ? 'badge-peca' : 'badge-servico'}">
-            ${item.type === 'peca' ? 'Peça' : 'Serviço'}
-          </span>
+          <span class="product-badge ${item.type === 'peca' ? 'badge-peca' : 'badge-servico'}">${item.type === 'peca' ? 'Peça' : 'Serviço'}</span>
           <h3 class="product-name">${item.name}</h3>
           <p class="product-desc">${item.description || ''}</p>
           <div class="product-price">${item.price || ''}</div>
-          <a href="https://wa.me/5511951324313?text=Olá! Tenho interesse em: ${encodeURIComponent(item.name)}"
-             target="_blank" class="product-whatsapp">Pedir via WhatsApp ↗</a>
+          <a href="https://wa.me/5511951324313?text=Olá! Tenho interesse em: ${encodeURIComponent(item.name)}" target="_blank" class="product-whatsapp">Pedir via WhatsApp ↗</a>
         </div>
       </div>
     `).join('');
@@ -461,15 +509,15 @@
     renderCatalog(type);
   }
 
-  // ─── CAROUSEL ───────────────────────────────────────
+  // ─── CAROUSEL ───
   let carouselIndex = 0;
   let carouselItems = [];
 
   function renderCarousel() {
     carouselItems = allItems.filter(i => i.featured);
-    const track    = document.getElementById('carousel-track');
+    const track = document.getElementById('carousel-track');
     const controls = document.getElementById('carousel-controls');
-    const empty    = document.getElementById('destaques-empty');
+    const empty = document.getElementById('destaques-empty');
 
     if (carouselItems.length === 0) {
       track.innerHTML = '';
@@ -481,35 +529,32 @@
     empty.style.display = 'none';
     track.innerHTML = carouselItems.map(item => `
       <div class="carousel-item">
-        ${item.image_url
-          ? `<img class="carousel-img" src="${item.image_url}" alt="${item.name}" loading="lazy">`
-          : `<div class="carousel-img-placeholder">⚙</div>`}
+        ${item.image_url ? `<img class="carousel-img" src="${item.image_url}" alt="${item.name}" loading="lazy">` : `<div class="carousel-img-placeholder">⚙</div>`}
         <div class="carousel-body">
-          <span class="carousel-badge ${item.type === 'peca' ? 'badge-peca' : 'badge-servico'}">
-            ${item.type === 'peca' ? 'Peça' : 'Serviço'}
-          </span>
+          <span class="carousel-badge ${item.type === 'peca' ? 'badge-peca' : 'badge-servico'}">${item.type === 'peca' ? 'Peça' : 'Serviço'}</span>
           <h3 class="carousel-name">${item.name}</h3>
           <div class="carousel-price">${item.price || ''}</div>
-          <a href="https://wa.me/5511951324313?text=Olá! Tenho interesse em: ${encodeURIComponent(item.name)}"
-             target="_blank" class="carousel-btn">Pedir via WhatsApp ↗</a>
+          <a href="https://wa.me/5511951324313?text=Olá! Tenho interesse em: ${encodeURIComponent(item.name)}" target="_blank" class="carousel-btn">Pedir via WhatsApp ↗</a>
         </div>
       </div>
     `).join('');
 
     if (carouselItems.length > 1) {
       controls.style.display = 'flex';
-      document.getElementById('carousel-dots').innerHTML =
-        carouselItems.map((_, i) =>
-          `<div class="carousel-dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})"></div>`
-        ).join('');
+      const dots = document.getElementById('carousel-dots');
+      dots.innerHTML = carouselItems.map((_, i) => `<div class="carousel-dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})"></div>`).join('');
     } else {
       controls.style.display = 'none';
     }
 
     carouselIndex = 0;
     updateCarousel();
+
+    // Auto-play
     clearInterval(window.carouselTimer);
-    if (carouselItems.length > 1) window.carouselTimer = setInterval(carouselNext, 4000);
+    if (carouselItems.length > 1) {
+      window.carouselTimer = setInterval(carouselNext, 4000);
+    }
   }
 
   function getVisibleCount() {
@@ -520,8 +565,7 @@
     const track = document.getElementById('carousel-track');
     const itemWidth = track.children[0] ? track.children[0].offsetWidth + 20 : 0;
     track.style.transform = `translateX(-${carouselIndex * itemWidth}px)`;
-    document.querySelectorAll('.carousel-dot').forEach((d, i) =>
-      d.classList.toggle('active', i === carouselIndex));
+    document.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === carouselIndex));
   }
 
   function carouselNext() {
@@ -529,11 +573,13 @@
     carouselIndex = carouselIndex >= max ? 0 : carouselIndex + 1;
     updateCarousel();
   }
+
   function carouselPrev() {
     const max = Math.max(0, carouselItems.length - getVisibleCount());
     carouselIndex = carouselIndex <= 0 ? max : carouselIndex - 1;
     updateCarousel();
   }
+
   function goToSlide(i) {
     carouselIndex = i;
     updateCarousel();
@@ -544,33 +590,22 @@
   window.addEventListener('resize', updateCarousel);
   loadCatalog();
 
-  // ─── ADMIN ──────────────────────────────────────────
+  // ─── ADMIN ───
   function toggleAdmin() { document.getElementById('admin-panel').classList.toggle('open'); }
 
-  async function adminLogin() {
+  function adminLogin() {
     const pass = document.getElementById('admin-password').value;
-    const msg  = document.getElementById('login-msg');
-    if (!pass) return;
-
-    // Testa a senha chamando a API — se retornar 401 é errada
-    try {
-      adminPassSession = pass;
-      await apiPost('insert', { item: null, _test: true }); // será rejeitado por falta de item, mas valida a senha
-    } catch(e) {
-      if (e.message === 'Não autorizado') {
-        adminPassSession = null;
-        msg.innerHTML = '<div class="admin-msg error">Senha incorreta.</div>';
-        return;
-      }
+    const msg = document.getElementById('login-msg');
+    if (pass === ADMIN_PASS) {
+      document.getElementById('admin-login').style.display = 'none';
+      document.getElementById('admin-dashboard').style.display = 'block';
+      renderAdminList();
+    } else {
+      msg.innerHTML = '<div class="admin-msg error">Senha incorreta.</div>';
     }
-
-    document.getElementById('admin-login').style.display = 'none';
-    document.getElementById('admin-dashboard').style.display = 'block';
-    renderAdminList();
   }
 
   function adminLogout() {
-    adminPassSession = null;
     document.getElementById('admin-password').value = '';
     document.getElementById('login-msg').innerHTML = '';
     document.getElementById('admin-login').style.display = 'block';
@@ -594,35 +629,44 @@
     }
   }
 
-  // ─── EDIT ───────────────────────────────────────────
+  // ─── EDIT ───
   let editingId = null;
   let editingOldImageUrl = null;
 
   function editItem(id) {
     const item = allItems.find(i => i.id === id);
     if (!item) return;
+
     editingId = id;
     editingOldImageUrl = item.image_url;
+
     document.getElementById('item-type').value = item.type;
     document.getElementById('item-price').value = item.price || '';
     document.getElementById('item-name').value = item.name;
     document.getElementById('item-desc').value = item.description || '';
     document.getElementById('item-featured').checked = item.featured || false;
+
     const preview = document.getElementById('img-preview');
     if (item.image_url) { preview.src = item.image_url; preview.style.display = 'block'; }
     else { preview.style.display = 'none'; }
+
     document.getElementById('item-image').value = '';
     document.getElementById('edit-banner').style.display = 'flex';
     document.getElementById('btn-add').textContent = '💾 Salvar Alterações';
     document.getElementById('add-msg').innerHTML = '';
+
+    // Switch to add tab
     switchTab('add', document.querySelector('.admin-tab'));
+    window.scrollTo(0, 0);
   }
 
   function cancelEdit() {
     editingId = null;
     editingOldImageUrl = null;
-    ['item-name','item-desc','item-price','item-image'].forEach(id =>
-      document.getElementById(id).value = '');
+    document.getElementById('item-name').value = '';
+    document.getElementById('item-desc').value = '';
+    document.getElementById('item-price').value = '';
+    document.getElementById('item-image').value = '';
     document.getElementById('item-featured').checked = false;
     document.getElementById('img-preview').style.display = 'none';
     document.getElementById('edit-banner').style.display = 'none';
@@ -630,86 +674,54 @@
     document.getElementById('add-msg').innerHTML = '';
   }
 
-  // Comprime imagem no browser antes de enviar
-  function compressImage(file, maxWidth, quality) {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let w = img.width, h = img.height;
-          if (w > maxWidth) { h = (h * maxWidth) / w; w = maxWidth; }
-          canvas.width = w; canvas.height = h;
-          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          canvas.toBlob(resolve, 'image/jpeg', quality);
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
   async function addItem() {
-    const name     = document.getElementById('item-name').value.trim();
-    const desc     = document.getElementById('item-desc').value.trim();
-    const price    = document.getElementById('item-price').value.trim();
-    const type     = document.getElementById('item-type').value;
+    const name = document.getElementById('item-name').value.trim();
+    const desc = document.getElementById('item-desc').value.trim();
+    const price = document.getElementById('item-price').value.trim();
+    const type = document.getElementById('item-type').value;
     const featured = document.getElementById('item-featured').checked;
     const imageFile = document.getElementById('item-image').files[0];
     const msg = document.getElementById('add-msg');
     const btn = document.getElementById('btn-add');
 
-    if (!name || !price) {
-      msg.innerHTML = '<div class="admin-msg error">Preencha ao menos o nome e o preço.</div>';
-      return;
-    }
+    if (!name || !price) { msg.innerHTML = '<div class="admin-msg error">Preencha ao menos o nome e o preço.</div>'; return; }
 
-    btn.disabled = true;
-    btn.textContent = 'Salvando...';
-    msg.innerHTML = '';
+    btn.disabled = true; btn.textContent = 'Salvando...'; msg.innerHTML = '';
 
     try {
       let image_url = editingId ? editingOldImageUrl : null;
 
-      // Upload de imagem (se houver novo arquivo)
       if (imageFile) {
         document.getElementById('upload-progress').style.display = 'block';
         document.getElementById('upload-progress-bar').style.width = '40%';
-
-        const compressed = await compressImage(imageFile, 800, 0.75);
-        const base64 = await new Promise(resolve => {
-          const r = new FileReader();
-          r.onload = () => resolve(r.result.split(',')[1]);
-          r.readAsDataURL(compressed);
-        });
-
-        const result = await apiPost('upload', { fileBase64: base64, mimeType: 'image/jpeg' });
-        image_url = result.url;
-
+        // If editing and had old image, delete it first
+        if (editingId && editingOldImageUrl) await deleteImage(editingOldImageUrl);
+        image_url = await uploadImage(imageFile);
         document.getElementById('upload-progress-bar').style.width = '100%';
-        setTimeout(() => {
-          document.getElementById('upload-progress').style.display = 'none';
-          document.getElementById('upload-progress-bar').style.width = '0%';
-        }, 600);
+        setTimeout(() => { document.getElementById('upload-progress').style.display = 'none'; document.getElementById('upload-progress-bar').style.width = '0%'; }, 600);
       }
-
-      const itemData = { type, name, description: desc || null, price, image_url, featured };
 
       if (editingId) {
-        await apiPost('update', { id: editingId, item: itemData });
+        // UPDATE
+        const res = await sbFetch(`/rest/v1/catalog?id=eq.${editingId}`, {
+          method: 'PATCH',
+          headers: { 'Prefer': 'return=representation' },
+          body: JSON.stringify({ type, name, description: desc || null, price, image_url, featured })
+        });
+        if (!res.ok) { const e = await res.json(); throw new Error(e.message || 'Erro ao atualizar'); }
       } else {
-        await apiPost('insert', { item: itemData });
+        // INSERT
+        await insertItem({ type, name, description: desc || null, price, image_url, featured });
       }
 
-      allItems = await apiGet('catalog');
+      allItems = await getItems();
       renderCatalog(currentFilter);
       renderCarousel();
-      const wasEditing = !!editingId;
       cancelEdit();
-      msg.innerHTML = `<div class="admin-msg success">✓ Item ${wasEditing ? 'atualizado' : 'adicionado'} com sucesso!</div>`;
+      msg.innerHTML = `<div class="admin-msg success">✓ Item ${editingId ? 'atualizado' : 'adicionado'} com sucesso!</div>`;
+      editingId = null;
+      editingOldImageUrl = null;
       setTimeout(() => msg.innerHTML = '', 3000);
-
     } catch(e) {
       msg.innerHTML = `<div class="admin-msg error">Erro: ${e.message}</div>`;
     } finally {
@@ -721,8 +733,9 @@
   async function deleteItem(id, imageUrl) {
     if (!confirm('Remover este item do catálogo?')) return;
     try {
-      await apiPost('delete', { id, imageUrl });
-      allItems = await apiGet('catalog');
+      await deleteItemDB(id);
+      if (imageUrl) await deleteImage(imageUrl);
+      allItems = await getItems();
       renderCatalog(currentFilter);
       renderCarousel();
       renderAdminList();
@@ -730,15 +743,13 @@
   }
 
   function renderAdminList() {
-    const list  = document.getElementById('admin-item-list');
+    const list = document.getElementById('admin-item-list');
     const empty = document.getElementById('empty-msg');
     if (allItems.length === 0) { list.innerHTML = ''; empty.style.display = 'block'; return; }
     empty.style.display = 'none';
     list.innerHTML = allItems.map(item => `
       <li class="admin-list-item">
-        ${item.image_url
-          ? `<img class="item-thumb" src="${item.image_url}" alt="${item.name}">`
-          : `<div class="item-thumb-placeholder">⚙</div>`}
+        ${item.image_url ? `<img class="item-thumb" src="${item.image_url}" alt="${item.name}">` : `<div class="item-thumb-placeholder">⚙</div>`}
         <div class="item-info">
           <strong>${item.name}${item.featured ? '<span class="star-badge">⭐ Destaque</span>' : ''}</strong>
           <span>${item.type === 'peca' ? 'Peça' : 'Serviço'} · ${item.price}</span>
