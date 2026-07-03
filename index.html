@@ -337,6 +337,7 @@
             <label>Senha</label>
             <input type="password" id="admin-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')adminLogin()">
             <button class="btn-admin" id="btn-login" style="width:100%;margin-top:16px;" onclick="adminLogin()">Entrar</button>
+            <p style="text-align:center;margin-top:12px;"><a href="#" onclick="showForgotPassword()" style="font-size:12px;color:var(--gray);text-decoration:underline;">Esqueci minha senha</a></p>
             <div id="login-msg"></div>
           </div>
         </div>
@@ -653,6 +654,29 @@
     document.getElementById('login-msg').innerHTML = '';
     document.getElementById('admin-login').style.display = 'block';
     document.getElementById('admin-dashboard').style.display = 'none';
+  }
+
+  // ─── FORGOT PASSWORD ───
+  async function showForgotPassword() {
+    const email = document.getElementById('admin-email').value.trim();
+    const msg = document.getElementById('login-msg');
+
+    if (!email) {
+      msg.innerHTML = '<div class="admin-msg error">Digite seu e-mail acima antes de continuar.</div>';
+      return;
+    }
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/recover`, {
+        method: 'POST',
+        headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      if (!res.ok) throw new Error('Erro ao enviar e-mail');
+      msg.innerHTML = '<div class="admin-msg success">✓ E-mail de redefinição enviado! Verifique sua caixa de entrada.</div>';
+    } catch(e) {
+      msg.innerHTML = '<div class="admin-msg error">Erro ao enviar e-mail. Tente novamente.</div>';
+    }
   }
 
   // ─── INACTIVITY TIMEOUT (30 min) ───
