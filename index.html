@@ -316,6 +316,22 @@
   <p class="footer-copy">© 2025 Cabral Speed Auto Peças · Todos os direitos reservados</p>
 </footer>
 
+<!-- RESET PASSWORD MODAL -->
+<div id="reset-modal" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.85);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--dark2);border:1px solid rgba(201,168,76,0.3);border-radius:8px;width:100%;max-width:400px;padding:32px;">
+    <h2 style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--gold);margin-bottom:8px;">Nova Senha</h2>
+    <p style="font-size:13px;color:var(--gray);margin-bottom:24px;">Digite sua nova senha abaixo.</p>
+    <div class="admin-form">
+      <label>Nova senha</label>
+      <input type="password" id="new-password" placeholder="••••••••" minlength="6">
+      <label>Confirmar senha</label>
+      <input type="password" id="confirm-password" placeholder="••••••••" minlength="6">
+      <button class="btn-admin" id="btn-reset" style="width:100%;margin-top:16px;" onclick="resetPassword()">Salvar nova senha</button>
+      <div id="reset-msg"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ADMIN TOGGLE -->
 <button id="admin-toggle" title="Painel Admin" onclick="toggleAdmin()">⚙</button>
 
@@ -866,6 +882,73 @@
       </li>
     `).join('');
   }
+  // ─── RESET PASSWORD ───
+  async function checkResetToken() {
+    const hash = window.location.hash;
+    if (!hash) return;
+
+    const params = new URLSearchParams(hash.substring(1));
+    const accessToken = params.get('access_token');
+    const type = params.get('type');
+
+    if (type === 'recovery' && accessToken) {
+      authToken = accessToken;
+      const modal = document.getElementById('reset-modal');
+      modal.style.display = 'flex';
+      // Clean URL
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  }
+
+  async function resetPassword() {
+    const newPass = document.getElementById('new-password').value;
+    const confirmPass = document.getElementById('confirm-password').value;
+    const msg = document.getElementById('reset-msg');
+    const btn = document.getElementById('btn-reset');
+
+    if (!newPass || newPass.length < 6) {
+      msg.innerHTML = '<div class="admin-msg error">A senha deve ter pelo menos 6 caracteres.</div>';
+      return;
+    }
+
+    if (newPass !== confirmPass) {
+      msg.innerHTML = '<div class="admin-msg error">As senhas não coincidem.</div>';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Salvando...';
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+        method: 'PUT',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ password: newPass })
+      });
+
+      if (!res.ok) throw new Error('Erro ao atualizar senha');
+
+      msg.innerHTML = '<div class="admin-msg success">✓ Senha atualizada com sucesso!</div>';
+      authToken = null;
+      setTimeout(() => {
+        document.getElementById('reset-modal').style.display = 'none';
+        msg.innerHTML = '';
+      }, 2500);
+    } catch(e) {
+      msg.innerHTML = '<div class="admin-msg error">Erro ao salvar. Tente novamente.</div>';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Salvar nova senha';
+    }
+  }
+
+  // Check reset token on page load
+  checkResetToken();
+
 </script>
 </body>
 </html>
