@@ -673,7 +673,7 @@
         body: JSON.stringify({ email })
       });
       if (!res.ok) throw new Error('Erro ao enviar e-mail');
-      msg.innerHTML = '<div class="admin-msg success">✓ E-mail de redefinição enviado! Verifique sua caixa de entrada.</div>';
+      msg.innerHTML = '<div class="admin-msg success">✓ Se este e-mail estiver cadastrado, você receberá o link em instantes. Verifique também a caixa de spam.</div>';
     } catch(e) {
       msg.innerHTML = '<div class="admin-msg error">Erro ao enviar e-mail. Tente novamente.</div>';
     }
