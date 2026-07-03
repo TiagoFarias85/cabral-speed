@@ -442,7 +442,7 @@
     const filename = `${Date.now()}.${ext}`;
     const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filename}`, {
       method: 'POST',
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'image/jpeg', 'x-admin-token': ADMIN_TOKEN },
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${authToken || SUPABASE_KEY}`, 'Content-Type': 'image/jpeg' },
       body: compressed
     });
     if (!res.ok) { const e = await res.json(); throw new Error(e.message || 'Erro no upload'); }
@@ -455,7 +455,7 @@
     if (!filename) return;
     await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filename}`, {
       method: 'DELETE',
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'x-admin-token': ADMIN_TOKEN }
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${authToken || SUPABASE_KEY}` }
     });
   }
 
