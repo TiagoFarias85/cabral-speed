@@ -394,15 +394,21 @@
 <script>
   const SUPABASE_URL = 'https://omloetzoukzkrrtyazwq.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_9ndkkgTSt2ry-ehPUv5fug_FZH4hIRq';
-  const ADMIN_PASS = 'cabral2025';
-  const ADMIN_TOKEN = 'cabral-speed-admin-2025';
   const BUCKET = 'product-images';
+  let authToken = null;
 
   // ─── SUPABASE HELPERS ───
   async function sbFetch(path, options = {}) {
+    const isWrite = options.method && ['POST','PATCH','DELETE'].includes(options.method);
+    const token = (isWrite && authToken) ? authToken : SUPABASE_KEY;
     const res = await fetch(`${SUPABASE_URL}${path}`, {
       ...options,
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', ...(options.method && ['POST','PATCH','DELETE'].includes(options.method) ? { 'x-admin-token': ADMIN_TOKEN } : {}), ...(options.headers || {}) }
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        ...(options.headers || {})
+      }
     });
     return res;
   }
@@ -593,19 +599,49 @@
   // ─── ADMIN ───
   function toggleAdmin() { document.getElementById('admin-panel').classList.toggle('open'); }
 
-  function adminLogin() {
+  async function adminLogin() {
+    const email = document.getElementById('admin-email').value.trim();
     const pass = document.getElementById('admin-password').value;
     const msg = document.getElementById('login-msg');
-    if (pass === ADMIN_PASS) {
+    const btn = document.getElementById('btn-login');
+
+    if (!email || !pass) {
+      msg.innerHTML = '<div class="admin-msg error">Preencha o e-mail e a senha.</div>';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Entrando...';
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+        method: 'POST',
+        headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: pass })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error_description || data.msg || 'Credenciais inválidas');
+      authToken = data.access_token;
       document.getElementById('admin-login').style.display = 'none';
       document.getElementById('admin-dashboard').style.display = 'block';
       renderAdminList();
-    } else {
-      msg.innerHTML = '<div class="admin-msg error">Senha incorreta.</div>';
+    } catch(e) {
+      msg.innerHTML = `<div class="admin-msg error">${e.message}</div>`;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Entrar';
     }
   }
 
-  function adminLogout() {
+  async function adminLogout() {
+    try {
+      await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
+        method: 'POST',
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${authToken}` }
+      });
+    } catch(e) {}
+    authToken = null;
+    document.getElementById('admin-email').value = '';
     document.getElementById('admin-password').value = '';
     document.getElementById('login-msg').innerHTML = '';
     document.getElementById('admin-login').style.display = 'block';
