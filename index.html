@@ -330,11 +330,13 @@
       <div id="admin-login">
         <div class="login-box">
           <h3>Acesso Restrito</h3>
-          <p>Digite a senha para gerenciar o catálogo</p>
+          <p>Digite suas credenciais para gerenciar o catálogo</p>
           <div class="admin-form">
+            <label>E-mail</label>
+            <input type="email" id="admin-email" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')adminLogin()">
             <label>Senha</label>
             <input type="password" id="admin-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')adminLogin()">
-            <button class="btn-admin" style="width:100%;margin-top:16px;" onclick="adminLogin()">Entrar</button>
+            <button class="btn-admin" id="btn-login" style="width:100%;margin-top:16px;" onclick="adminLogin()">Entrar</button>
             <div id="login-msg"></div>
           </div>
         </div>
