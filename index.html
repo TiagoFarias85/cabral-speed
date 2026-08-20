@@ -459,69 +459,56 @@
 </div>
 
 <script>
-  const SUPABASE_URL = 'https://omloetzoukzkrrtyazwq.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_9ndkkgTSt2ry-ehPUv5fug_FZH4hIRq';
-  const BUCKET = 'product-images';
+  const API_URL = 'https://cabralspeed-api-awbud4bwb9epc8ah.brazilsouth-01.azurewebsites.net/api';
   let authToken = null;
 
-  // ─── SUPABASE HELPERS ───
-  async function sbFetch(path, options = {}) {
-    const isWrite = options.method && ['POST','PATCH','DELETE'].includes(options.method);
-    const token = (isWrite && authToken) ? authToken : SUPABASE_KEY;
-    const res = await fetch(`${SUPABASE_URL}${path}`, {
-      ...options,
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        ...(options.headers || {})
-      }
-    });
+  // ─── API HELPERS ───
+  async function apiFetch(path, options = {}) {
+    const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+    if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+    const res = await fetch(`${API_URL}${path}`, { ...options, headers });
     return res;
   }
 
   async function getItems() {
-    const res = await sbFetch('/rest/v1/catalog?select=*&order=created_at.desc');
+    const res = await apiFetch('/catalog');
     if (!res.ok) throw new Error('Erro ao carregar catálogo');
     return res.json();
   }
 
   async function insertItem(item) {
-    const res = await sbFetch('/rest/v1/catalog', {
-      method: 'POST',
-      headers: { 'Prefer': 'return=representation' },
-      body: JSON.stringify(item)
-    });
+    const res = await apiFetch('/catalog', { method: 'POST', body: JSON.stringify(item) });
     if (!res.ok) { const e = await res.json(); throw new Error(e.message || 'Erro ao salvar'); }
     return res.json();
   }
 
+  async function updateItemDB(id, item) {
+    const res = await apiFetch(`/catalog/${id}`, { method: 'PATCH', body: JSON.stringify(item) });
+    if (!res.ok) { const e = await res.json(); throw new Error(e.message || 'Erro ao atualizar'); }
+  }
+
   async function deleteItemDB(id) {
-    const res = await sbFetch(`/rest/v1/catalog?id=eq.${id}`, { method: 'DELETE' });
+    const res = await apiFetch(`/catalog/${id}`, { method: 'DELETE' });
     if (!res.ok) throw new Error('Erro ao remover');
   }
 
   async function uploadImage(file) {
     const compressed = await compressImage(file, 800, 0.75);
-    const ext = 'jpg';
-    const filename = `${Date.now()}.${ext}`;
-    const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filename}`, {
+    const res = await fetch(`${API_URL}/storage/upload`, {
       method: 'POST',
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${authToken || SUPABASE_KEY}`, 'Content-Type': 'image/jpeg' },
+      headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'image/jpeg' },
       body: compressed
     });
     if (!res.ok) { const e = await res.json(); throw new Error(e.message || 'Erro no upload'); }
-    return `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${filename}`;
+    const data = await res.json();
+    return data.url;
   }
 
   async function deleteImage(imageUrl) {
-    if (!imageUrl || !imageUrl.includes(BUCKET)) return;
-    const filename = imageUrl.split(`/${BUCKET}/`)[1];
-    if (!filename) return;
-    await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filename}`, {
-      method: 'DELETE',
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${authToken || SUPABASE_KEY}` }
-    });
+    if (!imageUrl) return;
+    const fileName = imageUrl.split('/').pop();
+    if (!fileName) return;
+    await apiFetch(`/storage/${fileName}`, { method: 'DELETE' });
   }
 
   function compressImage(file, maxWidth, quality) {
@@ -564,7 +551,7 @@
     if (items.length === 0) { grid.innerHTML = '<p class="catalog-loading">Nenhum item encontrado.</p>'; return; }
     grid.innerHTML = items.map(item => `
       <div class="product-card">
-        ${item.image_url ? `<img class="product-img" src="${item.image_url}" alt="${item.name}" loading="lazy">` : `<div class="product-img-placeholder">⚙</div>`}
+        ${item.imageUrl ? `<img class="product-img" src="${item.imageUrl}" alt="${item.name}" loading="lazy">` : `<div class="product-img-placeholder">⚙</div>`}
         <div class="product-body">
           <span class="product-badge ${item.type === 'peca' ? 'badge-peca' : 'badge-servico'}">${item.type === 'peca' ? 'Peça' : 'Serviço'}</span>
           <h3 class="product-name">${item.name}</h3>
@@ -602,7 +589,7 @@
     empty.style.display = 'none';
     track.innerHTML = carouselItems.map(item => `
       <div class="carousel-item">
-        ${item.image_url ? `<img class="carousel-img" src="${item.image_url}" alt="${item.name}" loading="lazy">` : `<div class="carousel-img-placeholder">⚙</div>`}
+        ${item.imageUrl ? `<img class="carousel-img" src="${item.imageUrl}" alt="${item.name}" loading="lazy">` : `<div class="carousel-img-placeholder">⚙</div>`}
         <div class="carousel-body">
           <span class="carousel-badge ${item.type === 'peca' ? 'badge-peca' : 'badge-servico'}">${item.type === 'peca' ? 'Peça' : 'Serviço'}</span>
           <h3 class="carousel-name">${item.name}</h3>
@@ -623,7 +610,6 @@
     carouselIndex = 0;
     updateCarousel();
 
-    // Auto-play
     clearInterval(window.carouselTimer);
     if (carouselItems.length > 1) {
       window.carouselTimer = setInterval(carouselNext, 4000);
@@ -681,13 +667,13 @@
     btn.textContent = 'Entrando...';
 
     try {
-      const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      const res = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
-        headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password: pass })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error_description || data.msg || 'Credenciais inválidas');
+      if (!res.ok) throw new Error(data.message || 'Credenciais inválidas');
       authToken = data.access_token;
       document.getElementById('admin-login').style.display = 'none';
       document.getElementById('admin-dashboard').style.display = 'block';
@@ -703,10 +689,7 @@
 
   async function adminLogout() {
     try {
-      await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
-        method: 'POST',
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${authToken}` }
-      });
+      await apiFetch('/auth/logout', { method: 'POST' });
     } catch(e) {}
     authToken = null;
     document.getElementById('admin-email').value = '';
@@ -727,9 +710,9 @@
     }
 
     try {
-      const res = await fetch(`${SUPABASE_URL}/auth/v1/recover`, {
+      const res = await fetch(`${API_URL}/auth/forgot-password`, {
         method: 'POST',
-        headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
       });
       if (!res.ok) throw new Error('Erro ao enviar e-mail');
@@ -801,7 +784,7 @@
     if (!item) return;
 
     editingId = id;
-    editingOldImageUrl = item.image_url;
+    editingOldImageUrl = item.imageUrl;
 
     document.getElementById('item-type').value = item.type;
     document.getElementById('item-price').value = item.price || '';
@@ -810,7 +793,7 @@
     document.getElementById('item-featured').checked = item.featured || false;
 
     const preview = document.getElementById('img-preview');
-    if (item.image_url) { preview.src = item.image_url; preview.style.display = 'block'; }
+    if (item.imageUrl) { preview.src = item.imageUrl; preview.style.display = 'block'; }
     else { preview.style.display = 'none'; }
 
     document.getElementById('item-image').value = '';
@@ -818,7 +801,6 @@
     document.getElementById('btn-add').textContent = '💾 Salvar Alterações';
     document.getElementById('add-msg').innerHTML = '';
 
-    // Switch to add tab
     switchTab('add', document.querySelector('.admin-tab'));
     window.scrollTo(0, 0);
   }
@@ -854,29 +836,21 @@
     btn.disabled = true; btn.textContent = 'Salvando...'; msg.innerHTML = '';
 
     try {
-      let image_url = editingId ? editingOldImageUrl : null;
+      let imageUrl = editingId ? editingOldImageUrl : null;
 
       if (imageFile) {
         document.getElementById('upload-progress').style.display = 'block';
         document.getElementById('upload-progress-bar').style.width = '40%';
-        // If editing and had old image, delete it first
         if (editingId && editingOldImageUrl) await deleteImage(editingOldImageUrl);
-        image_url = await uploadImage(imageFile);
+        imageUrl = await uploadImage(imageFile);
         document.getElementById('upload-progress-bar').style.width = '100%';
         setTimeout(() => { document.getElementById('upload-progress').style.display = 'none'; document.getElementById('upload-progress-bar').style.width = '0%'; }, 600);
       }
 
       if (editingId) {
-        // UPDATE
-        const res = await sbFetch(`/rest/v1/catalog?id=eq.${editingId}`, {
-          method: 'PATCH',
-          headers: { 'Prefer': 'return=representation' },
-          body: JSON.stringify({ type, name, description: desc || null, price, image_url, featured })
-        });
-        if (!res.ok) { const e = await res.json(); throw new Error(e.message || 'Erro ao atualizar'); }
+        await updateItemDB(editingId, { type, name, description: desc || null, price, imageUrl, featured });
       } else {
-        // INSERT
-        await insertItem({ type, name, description: desc || null, price, image_url, featured });
+        await insertItem({ type, name, description: desc || null, price, imageUrl, featured });
       }
 
       allItems = await getItems();
@@ -914,18 +888,19 @@
     empty.style.display = 'none';
     list.innerHTML = allItems.map(item => `
       <li class="admin-list-item">
-        ${item.image_url ? `<img class="item-thumb" src="${item.image_url}" alt="${item.name}">` : `<div class="item-thumb-placeholder">⚙</div>`}
+        ${item.imageUrl ? `<img class="item-thumb" src="${item.imageUrl}" alt="${item.name}">` : `<div class="item-thumb-placeholder">⚙</div>`}
         <div class="item-info">
           <strong>${item.name}${item.featured ? '<span class="star-badge">⭐ Destaque</span>' : ''}</strong>
           <span>${item.type === 'peca' ? 'Peça' : 'Serviço'} · ${item.price}</span>
         </div>
         <div class="item-actions">
           <button class="btn-edit" onclick="editItem('${item.id}')">Editar</button>
-          <button class="btn-delete" onclick="deleteItem('${item.id}', ${item.image_url ? `'${item.image_url}'` : 'null'})">Remover</button>
+          <button class="btn-delete" onclick="deleteItem('${item.id}', ${item.imageUrl ? `'${item.imageUrl}'` : 'null'})">Remover</button>
         </div>
       </li>
     `).join('');
   }
+
   // ─── RESET PASSWORD ───
   async function checkResetToken() {
     const hash = window.location.hash;
@@ -939,7 +914,6 @@
       authToken = accessToken;
       const modal = document.getElementById('reset-modal');
       modal.style.display = 'flex';
-      // Clean URL
       window.history.replaceState(null, '', window.location.pathname);
     }
   }
@@ -964,10 +938,9 @@
     btn.textContent = 'Salvando...';
 
     try {
-      const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      const res = await fetch(`${API_URL}/auth/reset-password`, {
         method: 'PUT',
         headers: {
-          'apikey': SUPABASE_KEY,
           'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/json'
         },
@@ -990,7 +963,6 @@
     }
   }
 
-  // Check reset token on page load
   checkResetToken();
 
 </script>
